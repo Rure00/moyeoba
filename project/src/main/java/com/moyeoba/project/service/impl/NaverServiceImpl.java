@@ -6,7 +6,8 @@ import com.moyeoba.project.data.entity.User;
 import com.moyeoba.project.data.token.naver.NaverProfileDto;
 import com.moyeoba.project.data.token.naver.NaverTokenDto;
 import com.moyeoba.project.service.NaverService;
-import com.moyeoba.project.token.TokenManagerImpl;
+import com.moyeoba.project.token.TokenManager;
+import com.moyeoba.project.token.data.TokenPair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,14 @@ public class NaverServiceImpl implements NaverService {
     private final NaverApiManager naverApiManager;
     private final UserDAO userDAO;
 
-    private TokenManagerImpl tokenManagerImpl;
+    private final TokenManager tokenManager;
 
 
     @Autowired
-    public NaverServiceImpl(NaverApiManager naverApiManager, UserDAO userDAO) {
+    public NaverServiceImpl(NaverApiManager naverApiManager, UserDAO userDAO, TokenManager tokenManager) {
         this.naverApiManager = naverApiManager;
         this.userDAO = userDAO;
-        tokenManagerImpl = new TokenManagerImpl();
+        this.tokenManager = tokenManager;
     }
 
 
@@ -41,8 +42,8 @@ public class NaverServiceImpl implements NaverService {
                 return false;
             }
 
-            String accessToken = tokenManagerImpl.generateAccessToken();
-            String refreshToken = tokenManagerImpl.generateRefreshToken();
+            TokenPair tokenPair = tokenManager.getTokens(user.getId());
+
 
             return true;
         } catch (Exception e) {
@@ -50,5 +51,6 @@ public class NaverServiceImpl implements NaverService {
             return false;
         }
     }
+
 
 }
