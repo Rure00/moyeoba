@@ -4,20 +4,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Base64;
 
 @Getter
+@NoArgsConstructor
 public class JwtSign {
-    private final String verification;
-    @Value("${jwt_secret_key}")
+    private String verification;
+
     private String secretKey;
 
-    public JwtSign(@NotNull JwtHeader header, @NotNull JwtPayload payload) {
+    public JwtSign(@NotNull JwtHeader header, @NotNull JwtPayload payload, @NotNull String secretKey) {
         String sum = header.toJsonBase64() + "." + payload.toJsonBase64();
         verification =  Base64.getEncoder().encodeToString(sum.getBytes());
+        this.secretKey = secretKey;
     }
     public String toJsonBase64() {
         ObjectMapper mapper = new ObjectMapper();

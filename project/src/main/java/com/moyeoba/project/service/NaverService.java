@@ -1,9 +1,9 @@
 package com.moyeoba.project.service;
 
+import com.moyeoba.project.token.data.TokenPair;
+
 import java.io.UnsupportedEncodingException;
 
 public interface NaverService {
-
-
-    boolean naverLogin(String code, String state);
+    TokenPair naverLogin(String code, String state);
 }

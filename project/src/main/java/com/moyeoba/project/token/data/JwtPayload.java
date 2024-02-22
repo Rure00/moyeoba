@@ -4,21 +4,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 
 @Getter
+@NoArgsConstructor
 public class JwtPayload {
-    private final Integer VALID_TIME;     //분
-    private final String exp;     //expiration
-    private final String uid;     //user id
+    private Integer validTime;     //분
+    private String exp;     //expiration
+    private String uid;     //user id
 
     public JwtPayload(Long id, Integer validTime) {
-        VALID_TIME = validTime;
+        this.validTime = validTime;
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MINUTE, VALID_TIME);
+        calendar.add(Calendar.MINUTE, validTime);
         Date expiration = new Date(calendar.getTimeInMillis());
 
         uid = Long.toString(id);

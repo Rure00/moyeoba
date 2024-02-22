@@ -5,12 +5,14 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.util.Base64;
 
 @Getter
+@NoArgsConstructor
 public class JwtHeader {
     private final String alg = "HS256";             // 암호화 알고리즘
     private final String typ = "JWT";               // 토큰의 유형. jwt 고정

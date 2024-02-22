@@ -30,26 +30,20 @@ public class NaverServiceImpl implements NaverService {
 
 
     @Override
-    public boolean naverLogin(String code, String state) {
+    public TokenPair naverLogin(String code, String state) {
         NaverTokenDto token = naverApiManager.getToken(code, state);
 
         try {
             NaverProfileDto profileDto = naverApiManager.getUserProfile(token);
-
             Integer id = Integer.getInteger(profileDto.getResponse().getId());
             User user = userDAO.getUserByNaverId(id);
-            if(user == null) {
-                return false;
-            }
 
-            TokenPair tokenPair = tokenManager.getTokens(user.getId());
-
-
-            return true;
+            return tokenManager.generateTokens(user.getId());
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
+
+        return null;
     }
 
 
