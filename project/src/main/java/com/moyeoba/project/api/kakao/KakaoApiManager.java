@@ -1,73 +1,73 @@
-package com.moyeoba.project.api.naver;
+package com.moyeoba.project.api.kakao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.moyeoba.project.api.naver.NaverProfileDto;
+import com.moyeoba.project.api.naver.NaverTokenDto;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-@Component
-public class NaverApiManager {
+public class KakaoApiManager {
+    @Value("${kakao_client_id}")
+    private String kakaoClientId;
 
-    @Value("${naver_client_id}")
-    private String naverClientId;
+    @Value("${kakao_client_secret}")
+    private String kakaoClientSecret;
 
-    @Value("${naver_client_secret}")
-    private String naverClientSecret;
-
-    public NaverTokenDto getToken(String code, String state) {
+    public KakaoTokenDto getToken(String code, String state) {
         RestTemplate token_rt = new RestTemplate();
 
-        HttpHeaders naverTokenRequestHeaders = new HttpHeaders();
-        naverTokenRequestHeaders.add("Content-type", "application/x-www-form-urlencoded");
+        HttpHeaders kakaoTokenRequestHeaders = new HttpHeaders();
+        kakaoTokenRequestHeaders.add("Content-type", "application/x-www-form-urlencoded");
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
-        params.add("client_id", naverClientId);
-        params.add("client_secret", naverClientSecret);
+        params.add("client_id", kakaoClientId);
+        //TODO: 카카오 보안 강화 켜야함.
+        //params.add("client_secret", kakaoClientSecret);
         params.add("code", code);
-        params.add("state", state);
+        params.add("redirect_uri", state);
 
-        HttpEntity<MultiValueMap<String, String>> naverTokenRequest =
-                new HttpEntity<>(params, naverTokenRequestHeaders);
+        HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
+                new HttpEntity<>(params, kakaoTokenRequestHeaders);
 
         ResponseEntity<String> oauthTokenResponse = token_rt.exchange(
-                "https://nid.naver.com/oauth2.0/token",
+                "https://kauth.kakao.com/oauth/token",
                 HttpMethod.POST,
-                naverTokenRequest,
+                kakaoTokenRequest,
                 String.class
         );
         System.out.println(oauthTokenResponse);
 
         ObjectMapper token_om = new ObjectMapper();
-        NaverTokenDto naverToken = null;
+        KakaoTokenDto kakaoTokenDto = null;
         try {
-            naverToken = token_om.readValue(oauthTokenResponse.getBody(), NaverTokenDto.class);
+            kakaoTokenDto = token_om.readValue(oauthTokenResponse.getBody(), KakaoTokenDto.class);
         } catch (JsonProcessingException je) {
             je.printStackTrace();
         }
 
-        return naverToken;
+        return kakaoTokenDto;
     }
 
-    public NaverProfileDto getUserProfile(@NotNull NaverTokenDto naverToken) throws Exception {
+    public KakaoProfileDto getUserProfile(@NotNull KakaoTokenDto kakaoToken) throws Exception {
         // 토큰을 이용해 정보를 받아올 API 요청을 보낼 로직 작성하기
         RestTemplate profile_rt = new RestTemplate();
         HttpHeaders userDetailReqHeaders = new HttpHeaders();
-        userDetailReqHeaders.add("Authorization", "Bearer " + naverToken.getAccess_token());
+
+        userDetailReqHeaders.add("Authorization", "Bearer " + kakaoToken.getAccess_token());
         userDetailReqHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
         HttpEntity<MultiValueMap<String, String>> naverProfileRequest = new HttpEntity<>(userDetailReqHeaders);
 
         ResponseEntity<String> userDetailResponse = profile_rt.exchange(
-                "https://openapi.naver.com/v1/nid/me",
+                "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.POST,
                 naverProfileRequest,
                 String.class
@@ -75,15 +75,14 @@ public class NaverApiManager {
         System.out.println(userDetailResponse);
 
         ObjectMapper profile_om = new ObjectMapper();
-        NaverProfileDto naverProfile = null;
+        KakaoProfileDto kakaoProfile = null;
         try {
-            naverProfile = profile_om.readValue(userDetailResponse.getBody(), NaverProfileDto.class);
+            kakaoProfile = profile_om.readValue(userDetailResponse.getBody(), KakaoProfileDto.class);
         } catch (JsonProcessingException je) {
             je.printStackTrace();
             throw je;
         }
 
-        return naverProfile;
+        return kakaoProfile;
     }
-
 }

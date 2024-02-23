@@ -1,4 +1,4 @@
-package com.moyeoba.project.data.token.naver;
+package com.moyeoba.project.api.naver;
 
 import lombok.Data;
 
