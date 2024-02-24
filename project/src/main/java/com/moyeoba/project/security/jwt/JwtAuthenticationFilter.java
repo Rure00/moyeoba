@@ -23,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("Login Access: {}", request.getRequestURI());
+        log.info("Access: {}", request.getRequestURI());
         log.info("isOpen?: {}", PermittedPath.isOpen(request.getRequestURI()));
         if(PermittedPath.isOpen(request.getRequestURI())) {
             filterChain.doFilter(request, response);
@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } else {
-            System.out.println("유효한 JWT 토큰이 없습니다.");
+            System.out.println("There is No Valid Token.");
             throw new AccessDeniedException("Access Denied.");
         }
 

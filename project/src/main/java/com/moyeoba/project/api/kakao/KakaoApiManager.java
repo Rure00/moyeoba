@@ -10,10 +10,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Component
 public class KakaoApiManager {
     @Value("${kakao_client_id}")
     private String kakaoClientId;
@@ -21,7 +23,11 @@ public class KakaoApiManager {
     @Value("${kakao_client_secret}")
     private String kakaoClientSecret;
 
-    public KakaoTokenDto getToken(String code, String state) {
+
+    //TODO: URL 고치기
+    private final String redirectUrl = "http://localhost:8080/login/callback/kakao";
+
+    public KakaoTokenDto getToken(String code) {
         RestTemplate token_rt = new RestTemplate();
 
         HttpHeaders kakaoTokenRequestHeaders = new HttpHeaders();
@@ -33,7 +39,7 @@ public class KakaoApiManager {
         //TODO: 카카오 보안 강화 켜야함.
         //params.add("client_secret", kakaoClientSecret);
         params.add("code", code);
-        params.add("redirect_uri", state);
+        params.add("redirect_uri", redirectUrl);
 
         HttpEntity<MultiValueMap<String, String>> kakaoTokenRequest =
                 new HttpEntity<>(params, kakaoTokenRequestHeaders);
