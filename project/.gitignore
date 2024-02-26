@@ -23,6 +23,7 @@ bin/
 *.iml
 *.ipr
 
+ProjectApplicationTests
 application-API-KEY.properties
 out/
 !**/src/main/**/out/
