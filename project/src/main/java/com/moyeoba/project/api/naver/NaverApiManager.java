@@ -58,11 +58,11 @@ public class NaverApiManager {
         return naverToken;
     }
 
-    public NaverProfileDto getUserProfile(@NotNull NaverTokenDto naverToken) throws Exception {
+    public NaverProfileDto getUserProfile(@NotNull String naverToken) throws Exception {
         // 토큰을 이용해 정보를 받아올 API 요청을 보낼 로직 작성하기
         RestTemplate profile_rt = new RestTemplate();
         HttpHeaders userDetailReqHeaders = new HttpHeaders();
-        userDetailReqHeaders.add("Authorization", "Bearer " + naverToken.getAccess_token());
+        userDetailReqHeaders.add("Authorization", "Bearer " + naverToken);
         userDetailReqHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
         HttpEntity<MultiValueMap<String, String>> naverProfileRequest = new HttpEntity<>(userDetailReqHeaders);
 

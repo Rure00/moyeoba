@@ -22,7 +22,7 @@ public class NaverController {
 
     @GetMapping("/login")
     public ResponseEntity<TokenPair> naverLogin(@RequestParam("code") String code, @RequestParam("state") String state) {
-        TokenPair tokenPair = naverService.naverLogin(code, state);
+        TokenPair tokenPair = naverService.naverCodeLogin(code, state);
 
         if(tokenPair == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

@@ -25,9 +25,24 @@ public class KakaoServiceImpl implements KakaoService {
     private final TokenManager tokenManager;
 
     @Override
-    public TokenPair kakaoLogin(String code) {
+    public TokenPair kakaoCodeLogin(String code) {
         KakaoTokenDto token = kakaoApiManager.getToken(code);
 
+        try {
+            KakaoProfileDto profileDto = kakaoApiManager.getUserProfile(token.getAccess_token());
+            Integer id = Integer.getInteger(profileDto.getId());
+            User user = userDAO.getUserByKakaoId(id);
+
+            return tokenManager.generateTokens(user.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    public TokenPair kakaoTokenLogin(String token) {
         try {
             KakaoProfileDto profileDto = kakaoApiManager.getUserProfile(token);
             Integer id = Integer.getInteger(profileDto.getId());

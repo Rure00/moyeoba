@@ -24,29 +24,56 @@ public class LoginController {
         this.kakaoService = kakaoService;
     }
 
-    @GetMapping("/naver")
-    public ResponseEntity<TokenPair> naverLogin(@RequestParam("code") String code, @RequestParam("state") String state) {
-        log.info("Try Naver Login) {}", code);
-        TokenPair tokenPair = naverService.naverLogin(code, state);
+    @GetMapping("/naver/code")
+    public ResponseEntity<TokenPair> naverCodeLogin(@RequestParam("code") String code, @RequestParam("state") String state) {
+        log.info("Try Naver Code Login) {}", code);
+        TokenPair tokenPair = naverService.naverCodeLogin(code, state);
 
         if(tokenPair == null) {
-            log.info("Naver Login is Failed) {}", code);
+            log.info("Naver Code Login is Failed) {}", code);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
-            log.info("Naver Login is success) {}", code);
+            log.info("Naver Code Login is success) {}", code);
             return new ResponseEntity<>(tokenPair, HttpStatus.OK);
         }
     }
-    @GetMapping("/kakao")
-    public ResponseEntity<TokenPair> kakaoLogin(@RequestParam("code") String code) {
-        log.info("Try Kakao Login) {}", code);
-        TokenPair tokenPair = kakaoService.kakaoLogin(code);
+    @GetMapping("/naver/token")
+    public ResponseEntity<TokenPair> naverTokenLogin(@RequestParam("token") String token) {
+        log.info("Try Naver Token Login) {}", token);
+        TokenPair tokenPair = naverService.naverTokenLogin(token);
 
         if(tokenPair == null) {
-            log.info("Kakao Login is Failed) {}", code);
+            log.info("Naver Token Login is Failed) {}", token);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
-            log.info("Kakao Login is success) {}", code);
+            log.info("Naver Token Login is success) {}", token);
+            return new ResponseEntity<>(tokenPair, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/kakao/code")
+    public ResponseEntity<TokenPair> kakaoCodeLogin(@RequestParam("code") String code) {
+        log.info("Try Kakao Code Login) {}", code);
+        TokenPair tokenPair = kakaoService.kakaoCodeLogin(code);
+
+        if(tokenPair == null) {
+            log.info("Kakao Code Login is Failed) {}", code);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else {
+            log.info("Kakao Code Login is success) {}", code);
+            return new ResponseEntity<>(tokenPair, HttpStatus.OK);
+        }
+    }
+    @GetMapping("/kakao/token")
+    public ResponseEntity<TokenPair> kakaoTokenLogin(@RequestParam("token") String token) {
+        log.info("Try Kakao Token Login) {}", token);
+        TokenPair tokenPair = kakaoService.kakaoTokenLogin(token);
+
+        if(tokenPair == null) {
+            log.info("Kakao Token Login is Failed) {}", token);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } else {
+            log.info("Kakao Token Login is success) {}", token);
             return new ResponseEntity<>(tokenPair, HttpStatus.OK);
         }
     }
