@@ -1,13 +1,10 @@
 package com.moyeoba.project.controller;
 
 
-import com.moyeoba.project.data.dto.request.LoginRequestDto;
+import com.moyeoba.project.data.entity.User;
+import com.moyeoba.project.repository.UserRepository;
 import com.moyeoba.project.token.TokenManager;
-import com.sun.net.httpserver.HttpsServer;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class TestController {
 
     private final TokenManager tokenManager;
+    private final UserRepository userRepository;
 
-    public TestController(TokenManager tokenManager) {
+    public TestController(TokenManager tokenManager, UserRepository userRepository) {
         this.tokenManager = tokenManager;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/print")
@@ -28,10 +27,14 @@ public class TestController {
         return null;
     }
 
-    @PostMapping("body")
-    public ResponseEntity<?> testBody(@RequestBody LoginRequestDto requestDto) {
+    @PostMapping("add-mock-user")
+    public ResponseEntity<?> testBody() {
+        User user = new User(
+                0L, "0", "0000", "YnMFaP_UZ-qCd-wquFA4cPB-WwHcMoPi3zFd2BcrOeI", 0L
+        ) ;
 
-        return null;
+        userRepository.save(user);
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
 
