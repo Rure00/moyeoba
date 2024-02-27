@@ -45,7 +45,6 @@ public class SecurityConfiguration {
                         authorize
                                 .requestMatchers("/login/**").permitAll()
                                 .requestMatchers("/test/**").permitAll()
-                                .requestMatchers("/swagger-ui/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(tokenManager, authenticationEntryPoint), UsernamePasswordAuthenticationFilter.class);

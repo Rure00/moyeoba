@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class NaverProfileDto {
-    private String resultCode;
+    private String resultcode;
     private String message;
     private response response; // Json 형태로 주어지는 정보들을 담아줄 객체필드 생성 필수
 

@@ -63,12 +63,12 @@ public class NaverApiManager {
         RestTemplate profile_rt = new RestTemplate();
         HttpHeaders userDetailReqHeaders = new HttpHeaders();
         userDetailReqHeaders.add("Authorization", "Bearer " + naverToken);
-        userDetailReqHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+        //userDetailReqHeaders.add("Content-type", "application/x-www-form-urlencoded;charset=UTF-8");
         HttpEntity<MultiValueMap<String, String>> naverProfileRequest = new HttpEntity<>(userDetailReqHeaders);
 
         ResponseEntity<String> userDetailResponse = profile_rt.exchange(
                 "https://openapi.naver.com/v1/nid/me",
-                HttpMethod.POST,
+                HttpMethod.GET,
                 naverProfileRequest,
                 String.class
         );

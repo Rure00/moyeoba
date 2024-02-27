@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 @Slf4j
 @RestController("/login")
 public class LoginController {
@@ -24,59 +26,25 @@ public class LoginController {
         this.kakaoService = kakaoService;
     }
 
-    @GetMapping("/naver/code")
-    public ResponseEntity<TokenPair> naverCodeLogin(@RequestParam("code") String code, @RequestParam("state") String state) {
-        log.info("Try Naver Code Login) {}", code);
-        TokenPair tokenPair = naverService.naverCodeLogin(code, state);
-
-        if(tokenPair == null) {
-            log.info("Naver Code Login is Failed) {}", code);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } else {
-            log.info("Naver Code Login is success) {}", code);
-            return new ResponseEntity<>(tokenPair, HttpStatus.OK);
+    @GetMapping("/login")
+    public ResponseEntity<TokenPair> integratedLogin(@RequestParam("type") String type, @RequestParam("token") String token) {
+        if(!Objects.equals(type, "kakao") && !Objects.equals(type, "naver")) {
+            log.info("Login: Wrong parameter Passed.");
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-    }
-    @GetMapping("/naver/token")
-    public ResponseEntity<TokenPair> naverTokenLogin(@RequestParam("token") String token) {
-        log.info("Try Naver Token Login) {}", token);
-        TokenPair tokenPair = naverService.naverTokenLogin(token);
 
-        if(tokenPair == null) {
-            log.info("Naver Token Login is Failed) {}", token);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } else {
-            log.info("Naver Token Login is success) {}", token);
-            return new ResponseEntity<>(tokenPair, HttpStatus.OK);
+        log.info("Try login with {}", type);
+        TokenPair tokenPair = null;
+        try {
+            if(Objects.equals(type, "kakao")) tokenPair = kakaoService.kakaoTokenLogin(token);
+            else tokenPair = naverService.naverTokenLogin(token);
+
+            if(tokenPair == null)
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
+
+        return new ResponseEntity<>(tokenPair, HttpStatus.OK);
     }
-
-    @GetMapping("/kakao/code")
-    public ResponseEntity<TokenPair> kakaoCodeLogin(@RequestParam("code") String code) {
-        log.info("Try Kakao Code Login) {}", code);
-        TokenPair tokenPair = kakaoService.kakaoCodeLogin(code);
-
-        if(tokenPair == null) {
-            log.info("Kakao Code Login is Failed) {}", code);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } else {
-            log.info("Kakao Code Login is success) {}", code);
-            return new ResponseEntity<>(tokenPair, HttpStatus.OK);
-        }
-    }
-    @GetMapping("/kakao/token")
-    public ResponseEntity<TokenPair> kakaoTokenLogin(@RequestParam("token") String token) {
-        log.info("Try Kakao Token Login) {}", token);
-        TokenPair tokenPair = kakaoService.kakaoTokenLogin(token);
-
-        if(tokenPair == null) {
-            log.info("Kakao Token Login is Failed) {}", token);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } else {
-            log.info("Kakao Token Login is success) {}", token);
-            return new ResponseEntity<>(tokenPair, HttpStatus.OK);
-        }
-    }
-
-
 }
