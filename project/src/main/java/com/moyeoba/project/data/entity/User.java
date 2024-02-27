@@ -33,8 +33,6 @@ public class User implements UserDetails {
 
 
     private String naverId;
-
-
     private Long kakaoId;
 
 

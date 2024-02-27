@@ -28,9 +28,9 @@ public class TestController {
     }
 
     @PostMapping("add-mock-user")
-    public ResponseEntity<?> testBody() {
+    public ResponseEntity<?> testBody(@RequestParam("kakao_token") Long kToken, @RequestParam("naver_token") String nToken) {
         User user = new User(
-                0L, "0", "0000", "YnMFaP_UZ-qCd-wquFA4cPB-WwHcMoPi3zFd2BcrOeI", 0L
+                0L, "0", "0000", nToken, kToken
         ) ;
 
         userRepository.save(user);
