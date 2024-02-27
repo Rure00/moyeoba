@@ -5,21 +5,17 @@ import jakarta.persistence.*;
 
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
 @Entity  @Table(name = "users")
 @Getter
-@RequiredArgsConstructor
-@AllArgsConstructor
 public class User implements UserDetails {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,12 +27,17 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-
+    @NotNull
     private String naverId;
+    @NotNull
     private Long kakaoId;
 
-
-
+    public User(String naverId, Long kakaoId) {
+        Random rd = new Random();
+        this.uid = Long.toString(rd.nextLong());
+        this.naverId = naverId;
+        this.kakaoId = kakaoId;
+    }
 
 
 
