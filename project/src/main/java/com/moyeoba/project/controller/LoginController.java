@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ public class LoginController {
         this.kakaoService = kakaoService;
     }
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<TokenPair> integratedLogin(@RequestParam("type") String type, @RequestParam("token") String token) {
         if(!Objects.equals(type, "kakao") && !Objects.equals(type, "naver")) {
             log.info("Login: Wrong parameter Passed.");
