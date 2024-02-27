@@ -2,7 +2,7 @@ package com.moyeoba.project.security.jwt;
 
 public class PermittedPath {
     private final static String[] OPEN_PATH = new String[] {
-            "/test/*", "/login/*"
+            "/test/*", "/login/*", "/swagger-ui/*", "/configuration/ui", "/v3/api-docs/*"
     };
 
     public static boolean isOpen(String url) {

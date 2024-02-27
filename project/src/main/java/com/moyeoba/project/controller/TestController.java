@@ -1,6 +1,7 @@
 package com.moyeoba.project.controller;
 
 
+import com.moyeoba.project.data.dto.request.LoginRequestDto;
 import com.moyeoba.project.token.TokenManager;
 import com.sun.net.httpserver.HttpsServer;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +25,12 @@ public class TestController {
     @PostMapping("/print")
     public ResponseEntity<?> printSome(HttpServletRequest request) {
         System.out.println("TestController");
+        return null;
+    }
+
+    @PostMapping("body")
+    public ResponseEntity<?> testBody(@RequestBody LoginRequestDto requestDto) {
+
         return null;
     }
 

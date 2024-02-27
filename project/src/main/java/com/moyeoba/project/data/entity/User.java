@@ -11,12 +11,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 @Entity  @Table(name = "users")
-@Getter @Builder
+@Getter
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
@@ -30,14 +31,10 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Builder.Default
-    private List<String> roles = new ArrayList<>();
 
-    @ColumnDefault("-1")
-    private Long naverId;
+    private String naverId;
 
-    @ColumnDefault("-1")
+
     private Long kakaoId;
 
 
@@ -49,7 +46,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return Collections.emptyList();
     }
 
     @Override
