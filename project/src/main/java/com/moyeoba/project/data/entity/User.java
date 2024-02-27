@@ -3,10 +3,8 @@ package com.moyeoba.project.data.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Entity  @Table(name = "users")
 @Getter @Builder
-@NoArgsConstructor
+@RequiredArgsConstructor
 @AllArgsConstructor
 public class User implements UserDetails {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +26,6 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String uid;
 
-
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
@@ -36,6 +33,19 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
     private List<String> roles = new ArrayList<>();
+
+    @ColumnDefault("-1")
+    private Long naverId;
+
+    @ColumnDefault("-1")
+    private Long kakaoId;
+
+
+
+
+
+
+    //----------------------------------------------------------------------------------------------------------------------
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
