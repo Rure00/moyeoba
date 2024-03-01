@@ -37,6 +37,7 @@ public class User implements UserDetails {
         this.uid = Long.toString(rd.nextLong());
         this.naverId = naverId;
         this.kakaoId = kakaoId;
+        this.password = "0000";
     }
 
 
