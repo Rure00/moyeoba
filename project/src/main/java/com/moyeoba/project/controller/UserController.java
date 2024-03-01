@@ -1,8 +1,10 @@
 package com.moyeoba.project.controller;
 
 import com.moyeoba.project.data.dto.request.LoginRequestDto;
+import com.moyeoba.project.data.dto.request.SignUpDto;
 import com.moyeoba.project.service.KakaoService;
 import com.moyeoba.project.service.NaverService;
+import com.moyeoba.project.service.UserService;
 import com.moyeoba.project.token.data.TokenPair;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,6 +23,7 @@ import java.util.Objects;
 @RequestMapping("/user")
 public class UserController {
 
+    private final UserService userService;
     private final KakaoService kakaoService;
     private final NaverService naverService;
 
@@ -30,14 +33,7 @@ public class UserController {
         return new ResponseEntity<>("", HttpStatus.OK);
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> signUp() {
-        log.info("SignUp: ");
-
-        return new ResponseEntity<>("", HttpStatus.OK);
-    }
-
-    @PostMapping("/-")
+    @PostMapping("/login")
     public ResponseEntity<TokenPair> integratedLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         log.info("Login");
         String type = loginRequestDto.getType();
@@ -76,5 +72,15 @@ public class UserController {
         }
 
         return new ResponseEntity<>(tokenPair, HttpStatus.OK);
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<String> signUp(@RequestBody SignUpDto signUpDto) {
+        log.info("Try Sign Up");
+        boolean result = userService.trySignUp(signUpDto);
+
+        log.info("Sign Up Result: {}", result);
+        if(result) return new ResponseEntity<>("", HttpStatus.OK);
+        else return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
     }
 }
