@@ -32,8 +32,8 @@ public class NaverServiceImpl implements NaverService {
 
 
     @Override
-    public TokenPair naverCodeLogin(String code, String state) {
-        NaverTokenDto token = naverApiManager.getToken(code, state);
+    public TokenPair naverCodeLogin(String code) {
+        NaverTokenDto token = naverApiManager.getToken(code, "state");
 
         try {
             NaverProfileDto profileDto = naverApiManager.getUserProfile(token.getAccess_token());

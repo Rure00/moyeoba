@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public class LoginRequestDto {
+    String social;
     String type;
-    String token;
+    String payload;
 }

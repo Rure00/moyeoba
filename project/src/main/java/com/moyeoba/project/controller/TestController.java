@@ -8,7 +8,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,17 +36,29 @@ public class TestController {
     @PostMapping("/cookie")
     public ResponseEntity<?> cookieTest(HttpServletResponse response) {
         log.info("Generating Cookie...");
-        Cookie cookie = new Cookie("test", "my_string");
 
-        cookie.setPath("/test/cookie");
-        cookie.setMaxAge(60 * 60 * 24 * 30);
-        cookie.setDomain("moyeoba.com");
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", "qwerwea")
+                .domain("localhost")    //TODO: "moyeoba.com" 로 바꾸기
+                .path("/test/cookie")
+                .httpOnly(false)
+                .secure(false)
+                .maxAge(60 * 30)
+                .sameSite("Strict")
+                .build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", "afemlefwm")
+                .domain("localhost")    //TODO: "moyeoba.com" 로 바꾸기
+                .path("/test/cookie")
+                .httpOnly(false)
+                .secure(false)
+                .maxAge(60 * 60 * 24 * 14)
+                .sameSite("Strict")
+                .build();
 
-        response.addCookie(cookie);
-
-        log.info("finish");
-
-        return new ResponseEntity<>("", HttpStatus.OK);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body("Success");
     }
 
 

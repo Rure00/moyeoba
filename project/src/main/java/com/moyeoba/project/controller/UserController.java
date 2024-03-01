@@ -1,5 +1,6 @@
 package com.moyeoba.project.controller;
 
+import antlr.Token;
 import com.moyeoba.project.data.dto.request.LoginRequestDto;
 import com.moyeoba.project.data.dto.request.SignUpDto;
 import com.moyeoba.project.service.KakaoService;
@@ -11,7 +12,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.Response;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,12 +37,13 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenPair> integratedLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
+    public ResponseEntity<String> integratedLogin(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
         log.info("Login");
+        String social = loginRequestDto.getSocial();
         String type = loginRequestDto.getType();
-        String token = loginRequestDto.getToken();
+        String payload = loginRequestDto.getPayload();
 
-        if(!Objects.equals(type, "kakao") && !Objects.equals(type, "naver")) {
+        if(!social.equals("kakao") && !social.equals("naver")) {
             log.info("Login: Wrong parameter Passed.");
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
@@ -47,31 +51,45 @@ public class UserController {
         log.info("Try login with {}", type);
         TokenPair tokenPair = null;
         try {
-            if(Objects.equals(type, "kakao")) tokenPair = kakaoService.kakaoTokenLogin(token);
-            else tokenPair = naverService.naverTokenLogin(token);
+            if(social.equals("kakao")) {
+                if(type.equals("token")) tokenPair = kakaoService.kakaoTokenLogin(payload);
+                    else tokenPair = kakaoService.kakaoCodeLogin(payload);
+            }
+            else {
+                if(type.equals("token")) tokenPair = naverService.naverTokenLogin(payload);
+                else tokenPair = naverService.naverCodeLogin(payload);
+            }
 
             if(tokenPair == null)
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
 
-            Cookie accessCookie = new Cookie("access_token", tokenPair.getAccessToken());
-            Cookie refreshCookie = new Cookie("refresh_token", tokenPair.getRefreshToken());
 
-            accessCookie.setPath("/login/-");
-            accessCookie.setMaxAge(60 * 30);
-            accessCookie.setDomain("localhost");    //TODO: "moyeoba.com" 로 바꾸기
+            ResponseCookie accessCookie = ResponseCookie.from("access_token", tokenPair.getAccessToken())
+                            .domain("localhost")    //TODO: "moyeoba.com" 로 바꾸기
+                            .path("/user/login")
+                            .httpOnly(false)
+                            .secure(false)
+                            .maxAge(60 * 30)
+                            .sameSite("Strict")
+                    .build();
+            ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", tokenPair.getRefreshToken())
+                    .domain("localhost")    //TODO: "moyeoba.com" 로 바꾸기
+                    .path("/user/login")
+                    .httpOnly(false)
+                    .secure(false)
+                    .maxAge(60 * 60 * 24 * 14)
+                    .sameSite("Strict")
+                    .build();
 
-            refreshCookie.setPath("/login/-");
-            refreshCookie.setMaxAge(60 * 60 * 24 * 14);
-            refreshCookie.setDomain("localhost");       //TODO: "moyeoba.com" 로 바꾸기
-
-            response.addCookie(accessCookie);
-            response.addCookie(refreshCookie);
-
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                    .body("Success");
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(tokenPair, HttpStatus.OK);
     }
 
     @PostMapping("/signup")
