@@ -28,7 +28,6 @@ public class TokenManagerImpl implements TokenManager {
     //https://velog.io/@hiy7030/Spring-Security-JWT-%EC%83%9D%EC%84%B1#2-%ED%85%8C%EC%8A%A4%ED%8C%85-%EB%A9%94%EC%84%9C%EB%93%9C-%EA%B5%AC%ED%98%84
     //https://hudi.blog/self-made-jwt/
 
-    //TODO: TOKEN_KEY 설정하기
     private final String TOKEN_HEADER_KEY = "Authorization";
     private final UserDetailsService userDetailsService;
     @Value("${jwt_secret_key}")
