@@ -31,16 +31,6 @@ public class TestController {
         return null;
     }
 
-    @PostMapping("/add-mock-user")
-    public ResponseEntity<?> testBody(@RequestParam("kakao_token") Long kToken, @RequestParam("naver_token") String nToken) {
-        User user = new User(
-                nToken, kToken
-        ) ;
-
-        userRepository.save(user);
-        return new ResponseEntity<>(null, HttpStatus.OK);
-    }
-
     @PostMapping("/cookie")
     public ResponseEntity<?> cookieTest(HttpServletResponse response) {
         log.info("Generating Cookie...");

@@ -27,16 +27,12 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @NotNull
+
     private String naverId;
-    @NotNull
     private Long kakaoId;
 
-    public User(String naverId, Long kakaoId) {
-        Random rd = new Random();
-        this.uid = Long.toString(rd.nextLong());
-        this.naverId = naverId;
-        this.kakaoId = kakaoId;
+    public User(String phoneNumber) {
+        this.uid = phoneNumber;
         this.password = "0000";
     }
 
