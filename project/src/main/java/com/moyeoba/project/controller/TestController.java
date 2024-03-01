@@ -37,7 +37,7 @@ public class TestController {
     public ResponseEntity<?> cookieTest(HttpServletResponse response) {
         log.info("Generating Cookie...");
 
-        ResponseCookie accessCookie = ResponseCookie.from("access_token", "qwerwea")
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", "1234")
                 .domain("localhost")    //TODO: "moyeoba.com" 로 바꾸기
                 .path("/test/cookie")
                 .httpOnly(false)
@@ -45,7 +45,7 @@ public class TestController {
                 .maxAge(60 * 30)
                 .sameSite("Strict")
                 .build();
-        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", "afemlefwm")
+        ResponseCookie refreshCookie = ResponseCookie.from("access_token", "5678")
                 .domain("localhost")    //TODO: "moyeoba.com" 로 바꾸기
                 .path("/test/cookie")
                 .httpOnly(false)
