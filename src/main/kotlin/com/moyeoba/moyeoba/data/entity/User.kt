@@ -19,12 +19,11 @@ class User(
     private val id: Long? = null
 
     @Column(nullable = false, unique = true)
-    var uid: String = phoneNumber
+    private var uid: String = phoneNumber
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
-    var password: String = "0000"
-        private set
+    private var password: String = "0000"
 
 
     var naverId: String? = null
