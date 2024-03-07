@@ -19,7 +19,7 @@ class JwtPayload() {
         this.validTime = validTime
 
         val calendar = Calendar.getInstance()
-        calendar.add(Calendar.MINUTE, validTime.toInt())
+        calendar.add(Calendar.SECOND, validTime.toInt())
         val expiration: Date = Date(calendar.timeInMillis)
 
         exp = expiration.time.toString()

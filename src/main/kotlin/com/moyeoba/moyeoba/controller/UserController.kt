@@ -1,5 +1,7 @@
 package com.moyeoba.moyeoba.controller
 
+import com.moyeoba.moyeoba.data.dto.request.LoginRequestDto
+import com.moyeoba.moyeoba.data.dto.response.LoginResponse
 import com.moyeoba.moyeoba.jwt.TokenManager
 import com.moyeoba.moyeoba.repository.UserRepository
 import jakarta.servlet.http.HttpServletRequest
@@ -9,6 +11,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -20,6 +24,14 @@ class UserController{
     private lateinit var userRepository: UserRepository
     @Autowired
     private lateinit var tokenManager: TokenManager
+
+    @PostMapping("/test")
+    fun testCookie(request: HttpServletRequest) {
+        val cookies = request.cookies
+        for (cookie in cookies) {
+            println(cookie.name)
+        }
+    }
 
     @GetMapping("/refresh")
     fun refresh(request: HttpServletRequest): ResponseEntity<String> {
@@ -46,6 +58,30 @@ class UserController{
                     .status(HttpStatus.OK)
                     .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
                     .build()
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .build()
+    }
+
+    @GetMapping("/login")
+    fun login(@RequestBody loginRequestDto: LoginRequestDto): ResponseEntity<LoginResponse> {
+        val social = loginRequestDto.social
+        val tokenPair = when(social) {
+            "kakao" -> {
+
+            }
+            "naver" -> {
+
+            }
+            else -> {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build()
+            }
+
+
         }
 
         return ResponseEntity

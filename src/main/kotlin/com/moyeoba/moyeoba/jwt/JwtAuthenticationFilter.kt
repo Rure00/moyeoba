@@ -6,16 +6,16 @@ import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.authentication.TestingAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
 import java.io.IOException
 
 
-class JwtAuthenticationFilter: OncePerRequestFilter() {
+class JwtAuthenticationFilter(private val tokenManager: TokenManager): OncePerRequestFilter() {
 
-    @Autowired
-    private lateinit var tokenManager: TokenManager
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
         println("Access: ${request.requestURI}")
@@ -25,13 +25,15 @@ class JwtAuthenticationFilter: OncePerRequestFilter() {
             return
         }
 
-        val cookies = request.cookies
+
         var accessToken: String? = null
         var refreshToken: String? = null
 
-        for(cookie in cookies) {
-            if(cookie.name == "access_token") accessToken = cookie.value
-            else if(cookie.name == "refresh_token") refreshToken = cookie.value
+        request.cookies?.let {
+            for(cookie in it) {
+                if(cookie.name == "access_token") accessToken = cookie.value
+                else if(cookie.name == "refresh_token") refreshToken = cookie.value
+            }
         }
 
         if(accessToken == null) {
@@ -39,9 +41,19 @@ class JwtAuthenticationFilter: OncePerRequestFilter() {
             return
         }
 
-        if(tokenManager.validateToken(accessToken)) {
-            val authentication: Authentication = tokenManager.getAuthentication(accessToken)
-            SecurityContextHolder.getContext().authentication = authentication
+        if(tokenManager.validateToken(accessToken!!)) {
+            val authentication = tokenManager.getAuthentication(accessToken!!)
+
+            authentication?.let {
+                SecurityContextHolder.getContext().authentication = authentication
+
+                val context: SecurityContext = SecurityContextHolder.createEmptyContext()
+                val auth: Authentication = TestingAuthenticationToken("username", "password", "ROLE_USER")
+                context.authentication = auth
+
+                SecurityContextHolder.setContext(context)
+            }
+
 
             filterChain.doFilter(request, response)
             return

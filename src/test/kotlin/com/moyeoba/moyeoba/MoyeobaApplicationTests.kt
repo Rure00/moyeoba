@@ -1,5 +1,6 @@
 package com.moyeoba.moyeoba
 
+import com.moyeoba.moyeoba.jwt.PermittedPath
 import com.moyeoba.moyeoba.jwt.TokenManager
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,6 +27,16 @@ class MoyeobaApplicationTests {
 
 		val id = tokenManager.getUserIdFromToken(pair.accessToken)
 		println("Token id is $id")
+
+	}
+
+	@Test
+	fun pathTest() {
+		val paths = arrayOf("/test/*", "/user/login", "/user/signup", "/user/test")
+
+		println("Is Open?) ${PermittedPath.isOpen("/test/cookie")}")
+
+
 
 	}
 

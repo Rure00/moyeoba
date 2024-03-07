@@ -2,6 +2,7 @@ package com.moyeoba.moyeoba.jwt
 
 import com.moyeoba.moyeoba.jwt.token.*
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -15,14 +16,15 @@ class TokenManager {
     //https://hudi.blog/self-made-jwt/
     //TODO: TOKEN_KEY 설정하기
     private val TOKEN_HEADER_KEY = "Authorization"
-    private val userDetailsService: UserDetailsService? = null
 
+    @Autowired
+    private lateinit var userDetailsService: UserDetailsService
     @Value("\${jwt_secret_key}")
     private val secretKey: String? = null
 
     companion object {
-        const val ACCESS_TOKEN_VALID_TIME: Long = 30 //분 단위
-        const val REFRESH_TOKEN_VALID_TIME: Long = 20160 //2주
+        const val ACCESS_TOKEN_VALID_TIME: Long = 60*30
+        const val REFRESH_TOKEN_VALID_TIME: Long = (60 * 60 * 24) * 14 //2주
     }
 
 
@@ -55,10 +57,13 @@ class TokenManager {
         return result
     }
 
-    fun getAuthentication(token: String): Authentication {
-        val userDetails = userDetailsService!!.loadUserByUsername(this.getUserIdFromToken(token))
+    fun getAuthentication(token: String): Authentication? {
+        val userDetails = userDetailsService.loadUserByUsername(this.getUserIdFromToken(token))
+        userDetails?.let {
+            return UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
+        }
 
-        return UsernamePasswordAuthenticationToken(userDetails, "", userDetails!!.authorities)
+        return null
     }
 
     fun generateTokens(id: Long): TokenPair {

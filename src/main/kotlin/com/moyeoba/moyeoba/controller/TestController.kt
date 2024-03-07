@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.sql.Time
+import java.time.Instant
 
 
 @RestController
@@ -29,7 +31,10 @@ class TestController {
 
     @PostMapping("/cookie")
     fun getCookies(response: HttpServletResponse): ResponseEntity<String> {
-        val accessCookie = ResponseCookie.from("access_token", "1234")
+        val pair = tokenManager.generateTokens(2L)
+
+        println("Current UTC Time: ${Instant.now()}")
+        val accessCookie = ResponseCookie.from("access_token", pair.accessToken)
                 .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
                 .path("/")
                 .httpOnly(false)
@@ -38,7 +43,9 @@ class TestController {
                 .sameSite("Strict")
                 .build()
 
-        val refreshCookie = ResponseCookie.from("refresh_token", "5678")
+        println("maxAge Time: ${accessCookie.maxAge}")
+
+        val refreshCookie = ResponseCookie.from("refresh_token", pair.refreshToken)
                 .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
                 .path("/")
                 .httpOnly(false)
