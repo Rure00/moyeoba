@@ -13,7 +13,7 @@ class UserDetailsServiceImpl: UserDetailsService {
     private lateinit var userRepository: UserRepository
 
     override fun loadUserByUsername(uid: String): UserDetails? {
-        val optional = userRepository.getByUid(uid)
+        val optional = userRepository.findByUid(uid)
         return if(optional.isPresent) optional.get()
                 else null
     }

@@ -5,5 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface UserRepository: JpaRepository<User, Long> {
-    fun getByUid(uid: String): Optional<User>
+    fun findByUid(uid: String): Optional<User>
+    fun findByKakaoId(kakaoId: Long): Optional<User>
+    fun findByNaverId(naverId: String): Optional<User>
 }

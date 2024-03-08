@@ -1,5 +1,8 @@
 package com.moyeoba.moyeoba.controller
 
+import com.moyeoba.moyeoba.api.SocialLoginFlag
+import com.moyeoba.moyeoba.api.kakao.KakaoApiManager
+import com.moyeoba.moyeoba.api.naver.NaverApiManager
 import com.moyeoba.moyeoba.data.dto.request.LoginRequestDto
 import com.moyeoba.moyeoba.data.dto.response.LoginResponse
 import com.moyeoba.moyeoba.jwt.TokenManager
@@ -24,6 +27,10 @@ class UserController{
     private lateinit var userRepository: UserRepository
     @Autowired
     private lateinit var tokenManager: TokenManager
+    @Autowired
+    private lateinit var kakaoApiManager: KakaoApiManager
+    @Autowired
+    private lateinit var naverApiManager: NaverApiManager
 
     @PostMapping("/test")
     fun testCookie(request: HttpServletRequest) {
@@ -68,25 +75,33 @@ class UserController{
     @GetMapping("/login")
     fun login(@RequestBody loginRequestDto: LoginRequestDto): ResponseEntity<LoginResponse> {
         val social = loginRequestDto.social
-        val tokenPair = when(social) {
-            "kakao" -> {
-
-            }
-            "naver" -> {
-
-            }
-            else -> {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build()
-            }
-
-
+        val isAuthorized: SocialLoginFlag = when(social) {
+            "kakao" -> kakaoApiManager.authorize(loginRequestDto.type, loginRequestDto.payload)
+            "naver" -> naverApiManager.authorize(loginRequestDto.type, loginRequestDto.payload)
+            else -> return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build()
         }
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .build()
+        //TODO: 쿠키 추가
+
+        return when(isAuthorized) {
+            SocialLoginFlag.Found ->
+                ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(LoginResponse(true))
+
+            SocialLoginFlag.NotFound ->
+                ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(LoginResponse(false))
+
+            SocialLoginFlag.Error ->
+                ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build()
+        }
+
     }
 
 
