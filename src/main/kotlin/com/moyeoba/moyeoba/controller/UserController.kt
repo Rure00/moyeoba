@@ -6,6 +6,7 @@ import com.moyeoba.moyeoba.api.naver.NaverApiManager
 import com.moyeoba.moyeoba.data.dto.request.LoginRequestDto
 import com.moyeoba.moyeoba.data.dto.response.LoginResponse
 import com.moyeoba.moyeoba.jwt.TokenManager
+import com.moyeoba.moyeoba.security.cookie.CookieManager
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,6 +30,8 @@ class UserController{
     private lateinit var kakaoApiManager: KakaoApiManager
     @Autowired
     private lateinit var naverApiManager: NaverApiManager
+    @Autowired
+    private lateinit var cookieManager: CookieManager
 
     @PostMapping("/test")
     fun testCookie(request: HttpServletRequest) {
@@ -40,29 +43,20 @@ class UserController{
 
     @GetMapping("/refresh")
     fun refresh(request: HttpServletRequest): ResponseEntity<String> {
-        val cookies = request.cookies
-        var refreshToken: String? = null
-        for (cookie in cookies) {
-            if(cookie.name == "refresh_token") refreshToken = cookie.value
+
+        val refreshToken = request.cookies.filter {
+            it.name == "refresh_token"
         }
 
-        refreshToken?.let {
-            val id = tokenManager.getUserIdFromToken(refreshToken)
-            val accessToken = tokenManager.generateTokens(id.toLong()).accessToken
+        if(refreshToken.isNotEmpty()) {
 
-            val accessCookie = ResponseCookie.from("access_token", accessToken)
-                    .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
-                    .path("/")
-                    .httpOnly(false)
-                    .secure(false)
-                    .maxAge(TokenManager.ACCESS_TOKEN_VALID_TIME)
-                    .sameSite("Strict")
-                    .build()
-
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
-                    .build()
+            cookieManager.refresh(refreshToken[0].value)?.let {
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .header(HttpHeaders.SET_COOKIE, it.accessToken.toString())
+                        .header(HttpHeaders.SET_COOKIE, it.refreshToken.toString())
+                        .body("Success")
+            }
         }
 
         return ResponseEntity
@@ -83,8 +77,7 @@ class UserController{
 
         return when(isAuthorized.flag) {
             SocialLoginResult.LoginFlag.Found -> {
-                val cookiePair = getCookies(isAuthorized.id)
-
+                val cookiePair = cookieManager.getCookies(isAuthorized.id)
                 ResponseEntity
                         .status(HttpStatus.OK)
                         .header(HttpHeaders.SET_COOKIE, cookiePair.first.toString())
@@ -104,29 +97,4 @@ class UserController{
 
     }
 
-    private fun getCookies(id: Long): Pair<ResponseCookie, ResponseCookie> {
-
-        val tokenPair = tokenManager.generateTokens(id)
-
-        val accessCookie = ResponseCookie.from("access_token", tokenPair.accessToken)
-                .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
-                .path("/")
-                .httpOnly(false)
-                .secure(false)      //TODO: true로 바꾸기
-                .maxAge(TokenManager.ACCESS_TOKEN_VALID_TIME)
-                .sameSite("true")
-                .build()
-
-        val refreshCookie = ResponseCookie.from("refresh_token", tokenPair.refreshToken)
-                .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
-                .path("/user/refresh")
-                .httpOnly(true)
-                .secure(false)      //TODO: true로 바꾸기
-                .maxAge(TokenManager.REFRESH_TOKEN_VALID_TIME)
-                .sameSite("true")
-                .build()
-
-
-        return Pair(accessCookie, refreshCookie)
-    }
 }
