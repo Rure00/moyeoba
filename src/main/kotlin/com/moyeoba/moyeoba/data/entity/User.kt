@@ -16,7 +16,7 @@ class User(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private val id: Long? = null
+    val id: Long? = null
 
     @Column(nullable = false, unique = true)
     private var uid: String = phoneNumber

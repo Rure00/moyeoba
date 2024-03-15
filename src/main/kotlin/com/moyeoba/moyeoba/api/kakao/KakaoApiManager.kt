@@ -1,7 +1,7 @@
 package com.moyeoba.moyeoba.api.kakao
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.moyeoba.moyeoba.api.SocialLoginFlag
+import com.moyeoba.moyeoba.api.SocialLoginResult
 import com.moyeoba.moyeoba.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -29,18 +29,18 @@ class KakaoApiManager {
     private val redirectUrl = "http://localhost:8080/login/callback/kakao"
 
 
-    fun authorize(type: String, payload: String): SocialLoginFlag {
+    fun authorize(type: String, payload: String): SocialLoginResult {
         val token = if(type == "code")
                         getToken(payload)?.access_token
                     else payload
-        if(token.isNullOrEmpty()) return SocialLoginFlag.Error
+        if(token.isNullOrEmpty()) return SocialLoginResult(-1, SocialLoginResult.LoginFlag.Error)
 
         val user = getUserProfile(token)?.let {
             userRepository.findByKakaoId(it.id).getOrNull()
         }
 
-        return if(user!=null) SocialLoginFlag.Found
-            else SocialLoginFlag.NotFound
+        return if(user!=null) SocialLoginResult(user.id!!, SocialLoginResult.LoginFlag.Error)
+            else SocialLoginResult(-1, SocialLoginResult.LoginFlag.Error)
     }
 
     private fun getToken(payload: String): KakaoTokenDto? {

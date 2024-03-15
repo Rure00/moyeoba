@@ -23,7 +23,7 @@ class TokenManager {
     private val secretKey: String? = null
 
     companion object {
-        const val ACCESS_TOKEN_VALID_TIME: Long = 60*30
+        const val ACCESS_TOKEN_VALID_TIME: Long = 60*30     // 30분
         const val REFRESH_TOKEN_VALID_TIME: Long = (60 * 60 * 24) * 14 //2주
     }
 

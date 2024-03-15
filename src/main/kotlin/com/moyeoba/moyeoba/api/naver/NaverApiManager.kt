@@ -1,7 +1,7 @@
 package com.moyeoba.moyeoba.api.naver
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.moyeoba.moyeoba.api.SocialLoginFlag
+import com.moyeoba.moyeoba.api.SocialLoginResult
 import com.moyeoba.moyeoba.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -26,19 +26,19 @@ class NaverApiManager {
     @Value("\${naver_client_secret}")
     private lateinit var naverClientSecret: String
 
-    fun authorize(type: String, payload: String): SocialLoginFlag {
+    fun authorize(type: String, payload: String): SocialLoginResult {
         val token = if(type == "code")
             getToken(payload)?.access_token
         else payload
 
-        if(token.isNullOrEmpty()) return SocialLoginFlag.Error
+        if(token.isNullOrEmpty()) return SocialLoginResult(-1, SocialLoginResult.LoginFlag.Error)
 
         val user = getUserProfile(token)?.let {
             userRepository.findByNaverId(it.response.id).getOrNull()
         }
 
-        return if(user!=null) SocialLoginFlag.Found
-        else SocialLoginFlag.NotFound
+        return if(user!=null) SocialLoginResult(-1, SocialLoginResult.LoginFlag.Found)
+        else SocialLoginResult(-1, SocialLoginResult.LoginFlag.NotFound)
     }
 
     private fun getToken(code: String): NaverTokenDto? {
