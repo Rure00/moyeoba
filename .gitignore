@@ -22,7 +22,8 @@ bin/
 *.iws
 *.iml
 *.ipr
-*.properties
+application.properties
+application-API-KEY.properties
 MoyeobaApplicationTests.kt
 out/
 !**/src/main/**/out/
