@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.TestingAuthenticationToken
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
@@ -18,14 +19,6 @@ class JwtAuthenticationFilter(private val tokenManager: TokenManager): OncePerRe
 
 
     override fun doFilterInternal(request: HttpServletRequest, response: HttpServletResponse, filterChain: FilterChain) {
-        println("Access: ${request.requestURI}")
-        println("isOpen?: ${PermittedPath.isOpen(request.requestURI)}")
-        if (PermittedPath.isOpen(request.requestURI)) {
-            filterChain.doFilter(request, response)
-            return
-        }
-
-
         var accessToken: String? = null
         var refreshToken: String? = null
 
@@ -44,22 +37,16 @@ class JwtAuthenticationFilter(private val tokenManager: TokenManager): OncePerRe
         if(tokenManager.validateToken(accessToken!!)) {
             val authentication = tokenManager.getAuthentication(accessToken!!)
 
-            authentication?.let {
+            if(authentication != null) {
                 SecurityContextHolder.getContext().authentication = authentication
-
-                val context: SecurityContext = SecurityContextHolder.createEmptyContext()
-                val auth: Authentication = TestingAuthenticationToken("username", "password", "ROLE_USER")
-                context.authentication = auth
-
-                SecurityContextHolder.setContext(context)
+                filterChain.doFilter(request, response)
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Token is not Valid");
+                return
             }
 
-
-            filterChain.doFilter(request, response)
-            return
         } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
-            return
         }
     }
 }

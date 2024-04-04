@@ -1,7 +1,7 @@
 package com.moyeoba.moyeoba.jwt
 
 object PermittedPath {
-    private val OPEN_PATH = arrayOf("/test/*", "/user/*", "/swagger-ui/*")
+    val OPEN_PATH = arrayOf("/test/*", "/user/*", "/swagger-ui/*")
 
     fun isOpen(url: String): Boolean {
         for (path in OPEN_PATH) {

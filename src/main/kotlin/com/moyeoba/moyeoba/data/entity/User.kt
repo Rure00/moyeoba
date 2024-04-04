@@ -1,6 +1,7 @@
 package com.moyeoba.moyeoba.data.entity
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.moyeoba.moyeoba.security.UserRoleEnum
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -10,54 +11,16 @@ import java.util.Collections
 
 
 @Entity @Table(name = "users")
-class User(
-        phoneNumber: String
-): Serializable,UserDetails {
-
+class User(phoneNumber: String): Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
-    @Column(nullable = false, unique = true)
-    private var uid: String = phoneNumber
-
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @Column(nullable = false)
-    private var password: String = "0000"
-
-
+    var email: String? = null
     var naverId: String? = null
         private set
     var kakaoId: Long? = null
         private set
 
-
-    override fun getAuthorities(): Collection<GrantedAuthority> {
-        return Collections.emptyList()
-    }
-
-    override fun getPassword(): String {
-        return this.password
-    }
-
-    override fun getUsername(): String {
-        return this.uid
-    }
-
-    override fun isAccountNonExpired(): Boolean {
-        return true
-    }
-
-    override fun isAccountNonLocked(): Boolean {
-        return true
-    }
-
-    override fun isCredentialsNonExpired(): Boolean {
-        return true
-    }
-
-    override fun isEnabled(): Boolean {
-        return true
-    }
-
+    var role: UserRoleEnum = UserRoleEnum.Member
 }

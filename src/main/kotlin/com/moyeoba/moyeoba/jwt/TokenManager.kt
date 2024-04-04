@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
 import java.util.*
 
+
 @Component
 class TokenManager {
     //https://velog.io/@hiy7030/Spring-Security-JWT-%EC%83%9D%EC%84%B1#2-%ED%85%8C%EC%8A%A4%ED%8C%85-%EB%A9%94%EC%84%9C%EB%93%9C-%EA%B5%AC%ED%98%84
@@ -59,11 +60,12 @@ class TokenManager {
 
     fun getAuthentication(token: String): Authentication? {
         val userDetails = userDetailsService.loadUserByUsername(this.getUserIdFromToken(token))
-        userDetails?.let {
-            return UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
-        }
 
-        return null
+        println("UserDetails: ${userDetails.username}, ${userDetails.password}")
+
+        return if(userDetails != null) {
+            UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
+        } else null
     }
 
     fun generateTokens(id: Long): TokenPair {

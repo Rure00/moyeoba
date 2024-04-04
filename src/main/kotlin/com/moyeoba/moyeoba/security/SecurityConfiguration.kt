@@ -1,6 +1,7 @@
 package com.moyeoba.moyeoba.security
 
 import com.moyeoba.moyeoba.jwt.JwtAuthenticationFilter
+import com.moyeoba.moyeoba.jwt.PermittedPath
 import com.moyeoba.moyeoba.jwt.TokenManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -15,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity(debug = false)
 class SecurityConfiguration {
 
     @Autowired
@@ -27,7 +28,9 @@ class SecurityConfiguration {
             web.ignoring().requestMatchers(
                 "/swagger-ui/**",
                 "/swagger-resources/**",
-                "/v3/api-docs/**"
+                "/v3/api-docs/**",
+                "/test/**", "/user/**",
+                "auth/login"
             )
         }
     }
@@ -35,15 +38,13 @@ class SecurityConfiguration {
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
-                .csrf { it.disable() }
-                .sessionManagement{
-                    it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                }
-                .authorizeHttpRequests {
-                    it.requestMatchers("/test/**", "/user/**","/swagger-ui/**", "/v3/**").permitAll()
-                            .anyRequest().permitAll()
-                }
-                .addFilterBefore(JwtAuthenticationFilter(tokenManager), UsernamePasswordAuthenticationFilter::class.java)
+            .csrf { it.disable() }
+            .sessionManagement{
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+            .authorizeHttpRequests {
+                it.anyRequest().authenticated()
+            }.addFilterBefore(JwtAuthenticationFilter(tokenManager), UsernamePasswordAuthenticationFilter::class.java)
 
         return http.build()!!
     }
