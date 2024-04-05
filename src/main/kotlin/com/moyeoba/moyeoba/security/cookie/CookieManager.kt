@@ -11,9 +11,7 @@ class CookieManager {
     @Autowired
     private lateinit var tokenManager: TokenManager
 
-    fun refresh(exRefreshToken: String): CookiesData? {
-        if(!tokenManager.validateToken(exRefreshToken))  return null
-
+    fun refresh(exRefreshToken: String): CookiesData {
         val id = tokenManager.getUserIdFromToken(exRefreshToken)
 
         val generate = tokenManager.generateTokens(id.toLong())

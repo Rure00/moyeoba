@@ -1,6 +1,7 @@
 package com.moyeoba.moyeoba.jwt
 
 import com.moyeoba.moyeoba.jwt.token.*
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -74,6 +75,8 @@ class TokenManager {
         )
     }
 
+    fun validateToken(token: Cookie): Boolean
+        = validateToken(token.toString())
     fun validateToken(token: String): Boolean {
         val jsonArray = token.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 

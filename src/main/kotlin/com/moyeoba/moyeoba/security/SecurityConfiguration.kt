@@ -1,7 +1,6 @@
 package com.moyeoba.moyeoba.security
 
 import com.moyeoba.moyeoba.jwt.JwtAuthenticationFilter
-import com.moyeoba.moyeoba.jwt.PermittedPath
 import com.moyeoba.moyeoba.jwt.TokenManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -26,11 +25,7 @@ class SecurityConfiguration {
     fun webSecurityCustomizer(): WebSecurityCustomizer {
         return WebSecurityCustomizer { web: WebSecurity ->
             web.ignoring().requestMatchers(
-                "/swagger-ui/**",
-                "/swagger-resources/**",
-                "/v3/api-docs/**",
-                "/test/**", "/user/**",
-                "auth/login"
+                *PermittedPath.OPEN_PATH
             )
         }
     }

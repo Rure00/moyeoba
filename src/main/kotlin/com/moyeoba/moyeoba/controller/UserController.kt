@@ -7,6 +7,7 @@ import com.moyeoba.moyeoba.data.dto.request.LoginRequestDto
 import com.moyeoba.moyeoba.data.dto.request.RegisterEmailDto
 import com.moyeoba.moyeoba.data.dto.response.LoginResponse
 import com.moyeoba.moyeoba.jwt.TokenManager
+import com.moyeoba.moyeoba.security.UserDetailsImpl
 import com.moyeoba.moyeoba.security.cookie.CookieManager
 import com.moyeoba.moyeoba.service.UserService
 import jakarta.servlet.http.HttpServletRequest
@@ -16,6 +17,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -38,35 +40,25 @@ class UserController{
     @Autowired
     private lateinit var userService: UserService
 
-    @PostMapping("/test")
-    fun testCookie(request: HttpServletRequest) {
-        val cookies = request.cookies
-        for (cookie in cookies) {
-            println(cookie.name)
-        }
-    }
-
     @GetMapping("/refresh")
     fun refresh(request: HttpServletRequest): ResponseEntity<String> {
-
         val refreshToken = request.cookies.filter {
             it.name == "refresh_token"
         }
 
-        if(refreshToken.isNotEmpty()) {
+        return if(refreshToken.isNotEmpty() && tokenManager.validateToken(refreshToken[0])) {
+            val pair = cookieManager.refresh(refreshToken[0].value)
 
-            cookieManager.refresh(refreshToken[0].value)?.let {
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .header(HttpHeaders.SET_COOKIE, it.accessToken.toString())
-                        .header(HttpHeaders.SET_COOKIE, it.refreshToken.toString())
-                        .body("Success")
-            }
-        }
-
-        return ResponseEntity
+            ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, pair.accessToken.toString())
+                .header(HttpHeaders.SET_COOKIE, pair.refreshToken.toString())
+                .body("Success")
+        } else {
+            ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .build()
+        }
     }
 
     @PostMapping("/login")
@@ -103,24 +95,18 @@ class UserController{
     }
 
     @PostMapping("/resister-email")
-    fun resisterEmail(@RequestBody registerEmailDto: RegisterEmailDto, request: HttpServletRequest): ResponseEntity<Boolean> {
-        val accessToken = request.cookies.filter {
-            it.name == "access_token"
-        }
+    fun resisterEmail(@RequestBody registerEmailDto: RegisterEmailDto,
+                      request: HttpServletRequest,
+                      @AuthenticationPrincipal userDetails: UserDetailsImpl
+    ): ResponseEntity<Boolean> {
+        val userId = userDetails.user.id!!
 
-        if(accessToken.isEmpty() || !tokenManager.validateToken(accessToken[0].toString())) {
-            return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .build()
-        } else {
-            val token = accessToken[0].toString()
-            val userId = tokenManager.getUserIdFromToken(token)
-
-            userService.saveEmail(userId, registerEmailDto.email)
-
-            return ResponseEntity
+        return if(userService.saveEmail(userId, registerEmailDto.email)) {
+            ResponseEntity
                 .status(HttpStatus.OK)
                 .body(true)
-        }
+        } else ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
+            .body(false)
     }
 }
