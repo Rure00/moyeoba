@@ -40,6 +40,39 @@ class UserController{
     @Autowired
     private lateinit var userService: UserService
 
+    @PostMapping("/login")
+    fun login(@RequestBody loginRequestDto: LoginRequestDto, response: HttpServletResponse): ResponseEntity<LoginResponse> {
+        val social = loginRequestDto.social
+        val isAuthorized: SocialLoginResult = when(social) {
+            "kakao" -> kakaoApiManager.authorize(loginRequestDto.type, loginRequestDto.payload)
+            "naver" -> naverApiManager.authorize(loginRequestDto.type, loginRequestDto.payload)
+            else -> return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build()
+        }
+
+        return when(isAuthorized.flag) {
+            SocialLoginResult.LoginFlag.Found -> {
+                val cookiePair = cookieManager.getCookies(isAuthorized.id)
+                ResponseEntity
+                        .status(HttpStatus.OK)
+                        .header(HttpHeaders.SET_COOKIE, cookiePair.accessToken.toString())
+                        .header(HttpHeaders.SET_COOKIE, cookiePair.refreshToken.toString())
+                        .body(LoginResponse(true))
+            }
+            SocialLoginResult.LoginFlag.NotFound ->
+                ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(LoginResponse(false))
+
+            SocialLoginResult.LoginFlag.Error ->
+                ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build()
+        }
+
+    }
+
     @GetMapping("/refresh")
     fun refresh(request: HttpServletRequest): ResponseEntity<String> {
         val refreshToken = request.cookies.filter {
@@ -61,39 +94,6 @@ class UserController{
         }
     }
 
-    @PostMapping("/login")
-    fun login(@RequestBody loginRequestDto: LoginRequestDto, response: HttpServletResponse): ResponseEntity<LoginResponse> {
-        val social = loginRequestDto.social
-        val isAuthorized: SocialLoginResult = when(social) {
-            "kakao" -> kakaoApiManager.authorize(loginRequestDto.type, loginRequestDto.payload)
-            "naver" -> naverApiManager.authorize(loginRequestDto.type, loginRequestDto.payload)
-            else -> return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build()
-        }
-
-        return when(isAuthorized.flag) {
-            SocialLoginResult.LoginFlag.Found -> {
-                val cookiePair = cookieManager.getCookies(isAuthorized.id)
-                ResponseEntity
-                        .status(HttpStatus.OK)
-                        .header(HttpHeaders.SET_COOKIE, cookiePair.first.toString())
-                        .header(HttpHeaders.SET_COOKIE, cookiePair.second.toString())
-                        .body(LoginResponse(true))
-            }
-            SocialLoginResult.LoginFlag.NotFound ->
-                ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(LoginResponse(false))
-
-            SocialLoginResult.LoginFlag.Error ->
-                ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build()
-        }
-
-    }
-
     @PostMapping("/resister-email")
     fun resisterEmail(@RequestBody registerEmailDto: RegisterEmailDto,
                       request: HttpServletRequest,
@@ -108,5 +108,15 @@ class UserController{
         } else ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(false)
+    }
+
+    @GetMapping("/logout")
+    fun logout(): ResponseEntity<Boolean> {
+        val pair = cookieManager.logoutCookies()
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .header(HttpHeaders.SET_COOKIE, pair.accessToken.toString())
+            .header(HttpHeaders.SET_COOKIE, pair.refreshToken.toString())
+            .body(true)
     }
 }

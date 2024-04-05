@@ -26,8 +26,8 @@ class CheckAuthController {
         val cookiePair = cookieManager.getCookies(1L)
         return ResponseEntity
             .status(HttpStatus.OK)
-            .header(HttpHeaders.SET_COOKIE, cookiePair.first.toString())
-            .header(HttpHeaders.SET_COOKIE, cookiePair.second.toString())
+            .header(HttpHeaders.SET_COOKIE, cookiePair.accessToken.toString())
+            .header(HttpHeaders.SET_COOKIE, cookiePair.refreshToken.toString())
             .body(LoginResponse(true))
     }
 

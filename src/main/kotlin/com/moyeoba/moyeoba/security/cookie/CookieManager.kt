@@ -22,32 +22,39 @@ class CookieManager {
         return CookiesData(accessCookie, refreshCookie)
     }
 
-    fun getCookies(id: Long): Pair<ResponseCookie, ResponseCookie> {
+    fun getCookies(id: Long): CookiesData {
         val tokenPair = tokenManager.generateTokens(id)
 
         val accessCookie = makeAccessCookie(tokenPair.accessToken)
         val refreshCookie = makeRefreshCookie(tokenPair.refreshToken)
 
-        return Pair(accessCookie, refreshCookie)
+        return CookiesData(accessCookie, refreshCookie)
     }
 
-    private fun makeAccessCookie(token: String): ResponseCookie
+    fun logoutCookies(): CookiesData {
+        val accessCookie = makeAccessCookie("", 0)
+        val refreshCookie = makeRefreshCookie("", 0)
+
+        return CookiesData(accessCookie, refreshCookie)
+    }
+
+    private fun makeAccessCookie(token: String, time: Long = TokenManager.ACCESS_TOKEN_VALID_TIME): ResponseCookie
         = ResponseCookie.from("access_token", token)
             .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
             .path("/")
             .httpOnly(false)
-            .secure(false)      //TODO: true로 바꾸기
-            .maxAge(TokenManager.ACCESS_TOKEN_VALID_TIME)
+            .secure(true)      //TODO: true로 바꾸기
+            .maxAge(time)
             .sameSite("true")
             .build()
 
-    private fun makeRefreshCookie(token: String): ResponseCookie
+    private fun makeRefreshCookie(token: String, time: Long = TokenManager.REFRESH_TOKEN_VALID_TIME): ResponseCookie
         = ResponseCookie.from("refresh_token", token)
             .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
             .path("/user/refresh")
             .httpOnly(true)
             .secure(false)      //TODO: true로 바꾸기
-            .maxAge(TokenManager.REFRESH_TOKEN_VALID_TIME)
+            .maxAge(time)
             .sameSite("true")
             .build()
 }

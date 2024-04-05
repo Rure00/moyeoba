@@ -1,6 +1,5 @@
 package com.moyeoba.moyeoba.security
 
-import com.moyeoba.moyeoba.jwt.JwtAuthenticationFilter
 import com.moyeoba.moyeoba.jwt.TokenManager
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean

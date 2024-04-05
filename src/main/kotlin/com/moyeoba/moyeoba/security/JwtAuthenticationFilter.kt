@@ -1,18 +1,11 @@
-package com.moyeoba.moyeoba.jwt
+package com.moyeoba.moyeoba.security
 
-import com.moyeoba.moyeoba.jwt.token.TokenPair
+import com.moyeoba.moyeoba.jwt.TokenManager
 import jakarta.servlet.FilterChain
-import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.TestingAuthenticationToken
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
-import java.io.IOException
 
 
 class JwtAuthenticationFilter(private val tokenManager: TokenManager): OncePerRequestFilter() {

@@ -1,6 +1,7 @@
 package com.moyeoba.moyeoba.controller
 
 import com.moyeoba.moyeoba.jwt.TokenManager
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,6 +35,7 @@ class TestController {
         val pair = tokenManager.generateTokens(2L)
 
         println("Current UTC Time: ${Instant.now()}")
+
         val accessCookie = ResponseCookie.from("access_token", pair.accessToken)
                 .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
                 .path("/")
@@ -53,6 +55,10 @@ class TestController {
                 .maxAge(TokenManager.REFRESH_TOKEN_VALID_TIME)
                 .sameSite("Strict")
                 .build()
+
+
+
+
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -104,4 +110,34 @@ class TestController {
                 .build()
     }
 
+
+    @PostMapping("/expire-cookie")
+    fun expire(request: HttpServletRequest): ResponseEntity<String> {
+
+        val accessCookie = ResponseCookie.from("access_token", "")
+            .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
+            .path("/")
+            .httpOnly(false)
+            .secure(false)
+            .maxAge(0)
+            .sameSite("Strict")
+            .build()
+
+        println("maxAge Time: ${accessCookie.maxAge}")
+
+        val refreshCookie = ResponseCookie.from("refresh_token", "")
+            .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
+            .path("/")
+            .httpOnly(false)
+            .secure(false)
+            .maxAge(0)
+            .sameSite("Strict")
+            .build()
+
+
+        return ResponseEntity.status(HttpStatus.OK)
+            .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+            .body("Success")
+    }
 }
