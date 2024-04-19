@@ -5,6 +5,8 @@ data class NaverProfileDto(
         var message: String,
         var response: Response
 ) {
+        constructor(): this("", "", Response())
+
     data class Response(
             var id: String,
             var nickname: String,
@@ -18,5 +20,19 @@ data class NaverProfileDto(
             var mobile: String,
             var mobile_e164: String
 
-    )
+    ) {
+            constructor(): this(
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+            )
+    }
 }

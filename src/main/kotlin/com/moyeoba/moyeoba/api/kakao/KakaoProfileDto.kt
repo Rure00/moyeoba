@@ -9,6 +9,7 @@ data class KakaoProfileDto(
         var connected_at: String,
         var kakao_account: KakaoAccount
 ) {
+    constructor() : this(0L, "", KakaoAccount())
 
     //Filed Info Docs
     //https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#kakaoaccount
@@ -17,6 +18,6 @@ data class KakaoProfileDto(
             var name: String,
             var email: String
     ) {
-
+        constructor(): this("", "")
     }
 }

@@ -6,4 +6,6 @@ data class KakaoTokenDto(
         var expires_in: Int,
         var refresh_token: String,
         var refresh_token_expires_in: Int,
-)
+) {
+        constructor(): this("", "", 0, "", 0)
+}

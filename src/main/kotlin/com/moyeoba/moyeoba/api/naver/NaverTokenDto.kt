@@ -5,4 +5,6 @@ data class NaverTokenDto(
     var refresh_token: String,
     var token_type: String,
     var expires_in: Int,
-)
+) {
+    constructor(): this("", "", "", 0)
+}

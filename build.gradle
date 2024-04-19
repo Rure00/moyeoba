@@ -51,6 +51,8 @@ dependencies {
 	//Hibernate repository
 	implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.0.1'
 
+	//web socket for chatting system
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
 
 tasks.withType(KotlinCompile).configureEach {
