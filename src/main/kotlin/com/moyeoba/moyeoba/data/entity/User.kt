@@ -11,16 +11,22 @@ import java.util.Collections
 
 
 @Entity @Table(name = "users")
-class User(phoneNumber: String): Serializable {
+class User(): Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
     var email: String? = null
+
     var naverId: String? = null
-        private set
     var kakaoId: Long? = null
-        private set
 
     var role: UserRoleEnum = UserRoleEnum.Member
+
+    constructor(kakaoId: Long): this() {
+        this.kakaoId = kakaoId
+    }
+    constructor(naverId: String): this() {
+        this.naverId = naverId
+    }
 }

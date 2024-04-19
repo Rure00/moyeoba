@@ -2,6 +2,7 @@ package com.moyeoba.moyeoba.api.naver
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.moyeoba.moyeoba.api.SocialLoginResult
+import com.moyeoba.moyeoba.dao.UserDao
 import com.moyeoba.moyeoba.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -18,7 +19,7 @@ import kotlin.jvm.optionals.getOrNull
 class NaverApiManager {
 
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var userDao: UserDao
 
     @Value("\${naver_client_id}")
     private lateinit var naverClientId: String
@@ -34,11 +35,14 @@ class NaverApiManager {
         if(token.isNullOrEmpty()) return SocialLoginResult(-1, SocialLoginResult.LoginFlag.Error)
 
         val user = getUserProfile(token)?.let {
-            userRepository.findByNaverId(it.response.id).getOrNull()
+            userDao.getOrCreateNaver(it.response.id)
         }
 
-        return if(user!=null) SocialLoginResult(-1, SocialLoginResult.LoginFlag.Found)
-        else SocialLoginResult(-1, SocialLoginResult.LoginFlag.NotFound)
+        return if(userDao.getEmail(user!!.id!!) != null) {
+            SocialLoginResult(user.id!!, SocialLoginResult.LoginFlag.Found)
+        } else {
+            SocialLoginResult(user.id!!, SocialLoginResult.LoginFlag.NotFound)
+        }
     }
 
     private fun getToken(code: String): NaverTokenDto? {

@@ -2,6 +2,7 @@ package com.moyeoba.moyeoba.api.kakao
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.moyeoba.moyeoba.api.SocialLoginResult
+import com.moyeoba.moyeoba.dao.UserDao
 import com.moyeoba.moyeoba.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -23,7 +24,7 @@ class KakaoApiManager {
     private lateinit var kakaoClientSecret: String
 
     @Autowired
-    private lateinit var userRepository: UserRepository
+    private lateinit var userDao: UserDao
 
     //TODO: URL 고치기
     private val redirectUrl = "http://localhost:8080/login/callback/kakao"
@@ -36,11 +37,14 @@ class KakaoApiManager {
         if(token.isNullOrEmpty()) return SocialLoginResult(-1, SocialLoginResult.LoginFlag.Error)
 
         val user = getUserProfile(token)?.let {
-            userRepository.findByKakaoId(it.id).getOrNull()
+            userDao.getOrCreateKakao(it.id)
         }
 
-        return if(user!=null) SocialLoginResult(user.id!!, SocialLoginResult.LoginFlag.Error)
-            else SocialLoginResult(-1, SocialLoginResult.LoginFlag.Error)
+        return if(userDao.getEmail(user!!.id!!) != null) {
+            SocialLoginResult(user.id!!, SocialLoginResult.LoginFlag.Found)
+        } else {
+            SocialLoginResult(user.id!!, SocialLoginResult.LoginFlag.NotFound)
+        }
     }
 
     private fun getToken(payload: String): KakaoTokenDto? {
