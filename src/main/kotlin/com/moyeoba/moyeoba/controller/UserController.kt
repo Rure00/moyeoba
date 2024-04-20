@@ -58,12 +58,12 @@ class UserController{
                         .status(HttpStatus.OK)
                         .header(HttpHeaders.SET_COOKIE, cookiePair.accessToken.toString())
                         .header(HttpHeaders.SET_COOKIE, cookiePair.refreshToken.toString())
-                        .body(LoginResponse(true))
+                        .body(LoginResponse(false))
             }
             SocialLoginResult.LoginFlag.NotFound ->
                 ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(LoginResponse(false))
+                    .body(LoginResponse(true))
 
             SocialLoginResult.LoginFlag.Error ->
                 ResponseEntity
