@@ -52,7 +52,7 @@ class UserController{
         }
 
         return when(isAuthorized.flag) {
-            SocialLoginResult.LoginFlag.Found -> {
+            SocialLoginResult.LoginFlag.ExistingUser -> {
                 val cookiePair = cookieManager.getCookies(isAuthorized.id)
                 ResponseEntity
                         .status(HttpStatus.OK)
@@ -60,7 +60,7 @@ class UserController{
                         .header(HttpHeaders.SET_COOKIE, cookiePair.refreshToken.toString())
                         .body(LoginResponse(false))
             }
-            SocialLoginResult.LoginFlag.NotFound ->
+            SocialLoginResult.LoginFlag.NewUser ->
                 ResponseEntity
                     .status(HttpStatus.OK)
                     .body(LoginResponse(true))

@@ -40,10 +40,10 @@ class KakaoApiManager {
             userDao.getOrCreateKakao(it.id)
         }
 
-        return if(userDao.getEmail(user!!.id!!) != null) {
-            SocialLoginResult(user.id!!, SocialLoginResult.LoginFlag.Found)
+        return if(userDao.getEmail(user!!.id!!).isNullOrEmpty()) {
+            SocialLoginResult(user.id!!, SocialLoginResult.LoginFlag.NewUser)
         } else {
-            SocialLoginResult(user.id!!, SocialLoginResult.LoginFlag.NotFound)
+            SocialLoginResult(user.id!!, SocialLoginResult.LoginFlag.ExistingUser)
         }
     }
 
