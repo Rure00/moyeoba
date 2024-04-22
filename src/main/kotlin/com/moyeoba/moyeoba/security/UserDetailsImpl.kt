@@ -16,10 +16,7 @@ class UserDetailsImpl(val user: User): UserDetails {
 
     override fun getPassword(): String = "0000"
 
-    override fun getUsername(): String =
-        if(user.email.isNullOrEmpty()) {
-        ""
-    } else {user.email!!}
+    override fun getUsername(): String = user.id!!.toString()
 
     override fun isAccountNonExpired(): Boolean = false
 
