@@ -31,9 +31,9 @@ class UserDaoImpl: UserDao {
         val optional = userRepository.findById(userId)
         if(optional.isPresent) {
             val user = optional.get()
+            user.email = email
 
-            //TODO: update user entity
-            //userRepository.save(user)
+            userRepository.save(user)
 
             return true
         } else return false
