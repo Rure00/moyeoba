@@ -60,11 +60,14 @@ class UserController{
                         .header(HttpHeaders.SET_COOKIE, cookiePair.refreshToken.toString())
                         .body(LoginResponse(false))
             }
-            SocialLoginResult.LoginFlag.NewUser ->
+            SocialLoginResult.LoginFlag.NewUser -> {
+                val cookiePair = cookieManager.getCookies(isAuthorized.id)
                 ResponseEntity
                     .status(HttpStatus.OK)
+                    .header(HttpHeaders.SET_COOKIE, cookiePair.accessToken.toString())
+                    .header(HttpHeaders.SET_COOKIE, cookiePair.refreshToken.toString())
                     .body(LoginResponse(true))
-
+            }
             SocialLoginResult.LoginFlag.Error ->
                 ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
