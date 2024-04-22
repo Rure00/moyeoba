@@ -58,7 +58,7 @@ class KakaoApiManager {
         params.add("client_id", kakaoClientId)
 
         //TODO: 카카오 보안 강화 켜야함.
-        //params.add("client_secret", kakaoClientSecret);
+        params.add("client_secret", kakaoClientSecret);
 
         params.add("code", payload)
         params.add("redirect_uri", redirectUrl)

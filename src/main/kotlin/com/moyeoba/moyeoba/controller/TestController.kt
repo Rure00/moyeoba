@@ -37,7 +37,7 @@ class TestController {
         println("Current UTC Time: ${Instant.now()}")
 
         val accessCookie = ResponseCookie.from("access_token", pair.accessToken)
-                .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
+                .domain("localhost:8080/*") //TODO: "moyeoba.com" 로 바꾸기
                 .path("/")
                 .httpOnly(false)
                 .secure(false)
