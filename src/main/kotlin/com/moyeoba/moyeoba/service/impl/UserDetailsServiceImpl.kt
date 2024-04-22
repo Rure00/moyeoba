@@ -16,7 +16,7 @@ class UserDetailsServiceImpl: UserDetailsService {
     override fun loadUserByUsername(uid: String): UserDetails? {
         val optional = userRepository.findById(uid.toLong())
 
-        println("loadUserByUserName.isFound : ${optional.isPresent}")
+        println("loadUserByUserName.isFound : ${optional.isPresent}. user id is ${uid.toLong()}")
 
         return if(optional.isPresent) {
             UserDetailsImpl(optional.get())
