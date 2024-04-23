@@ -16,14 +16,19 @@ class JwtAuthenticationFilter(private val tokenManager: TokenManager): OncePerRe
         var refreshToken: String? = null
 
         request.cookies?.let {
+            println("--------------------------------------------------------------")
             for(cookie in it) {
+                println("${cookie.name}: ${cookie.value}")
                 if(cookie.name == "access_token") accessToken = cookie.value
                 else if(cookie.name == "refresh_token") refreshToken = cookie.value
             }
+            println("--------------------------------------------------------------")
+
         }
 
         if(accessToken == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Token is not Found");
+            println("Token is Not Found...!")
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Token is not Found")
             return
         }
 
