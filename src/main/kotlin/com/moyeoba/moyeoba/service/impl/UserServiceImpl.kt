@@ -1,15 +1,23 @@
 package com.moyeoba.moyeoba.service.impl
 
+import com.moyeoba.moyeoba.api.SocialLoginResult
 import com.moyeoba.moyeoba.dao.UserDao
+import com.moyeoba.moyeoba.jwt.TokenManager
 import com.moyeoba.moyeoba.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class UserServiceImpl: UserService {
+    @Autowired
+    private lateinit var tokenManager: TokenManager
 
     @Autowired
     private lateinit var userDao: UserDao
+    override fun authorize(token: String) {
+
+
+    }
 
     override fun saveEmail(userId: String, email: String): Boolean {
         val id = userId.toLong()

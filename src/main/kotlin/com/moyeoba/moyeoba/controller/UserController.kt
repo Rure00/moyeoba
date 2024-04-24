@@ -74,6 +74,27 @@ class UserController{
 
     }
 
+    @PostMapping("/login/jwt")
+    fun loginWithJwt(@RequestBody loginRequestDto: LoginRequestDto, response: HttpServletResponse): ResponseEntity<LoginResponse> {
+        val token = loginRequestDto.payload
+        val isValid = tokenManager.validateToken(token)
+
+        if(isValid) {
+            val id = tokenManager.getUserIdFromToken(token)
+            val newToken = tokenManager.generateTokens(id.toLong())
+
+            return ResponseEntity
+                .status(HttpStatus.OK)
+                .header(HttpHeaders.SET_COOKIE, newToken.accessToken.toString())
+                .header(HttpHeaders.SET_COOKIE, newToken.refreshToken.toString())
+                .body(LoginResponse(false))
+        } else {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .build()
+        }
+    }
+
     @GetMapping("/refresh")
     fun refresh(request: HttpServletRequest): ResponseEntity<String> {
         val refreshToken = request.cookies.filter {
