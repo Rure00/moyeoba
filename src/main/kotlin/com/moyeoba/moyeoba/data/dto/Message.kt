@@ -8,5 +8,7 @@ data class Message(
 ) {
     constructor(sender: String, receiver: String):
             this("", sender = sender,receiver = receiver, "")
-
+    constructor(): this(
+        "", sender = "",receiver = "", ""
+    )
 }

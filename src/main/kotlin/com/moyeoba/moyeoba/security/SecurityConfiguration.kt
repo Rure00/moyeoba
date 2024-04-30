@@ -13,9 +13,11 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 
-@Configuration
-@EnableWebSecurity(debug = false)
+//@Configuration
+//@EnableWebSecurity(debug = false)
 class SecurityConfiguration {
+
+    //TODO: 위 어노테이션 제거하기
 
     @Autowired
     private lateinit var tokenManager: TokenManager

@@ -21,6 +21,8 @@ class WebSocketChatHandler: TextWebSocketHandler() {
     override fun afterConnectionEstablished(session: WebSocketSession) {
         super.afterConnectionEstablished(session)
 
+        println("Connection is Established.")
+
         val sessionId = session.id
         sessions[sessionId] = session
 
