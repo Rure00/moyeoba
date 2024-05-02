@@ -22,7 +22,7 @@ class ChatController {
     fun chat(@DestinationVariable roomId: Long?, message: Message): Message? {
         //채팅 저장
 
-        println("WebSocket is redirected to ChatController.")
+        println("Get Message) ${message.sender} to ${message.receiver}: ${message.data}")
 
         return null
     }
