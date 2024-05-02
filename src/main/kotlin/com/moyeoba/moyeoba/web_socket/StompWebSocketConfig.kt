@@ -1,8 +1,8 @@
 package com.moyeoba.moyeoba.web_socket
 
 import org.springframework.context.annotation.Configuration
+import org.springframework.messaging.simp.config.ChannelRegistration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
-import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
@@ -24,5 +24,11 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/sub") // 브로커 -> 구독자들(메세지받을때)
     }
 
+
+    override fun configureClientInboundChannel(registration: ChannelRegistration) {
+        println("Configuring task executor for Client Inbound Channel")
+        registration.taskExecutor().corePoolSize(4)
+        registration.taskExecutor().maxPoolSize(4)
+    }
 
 }
