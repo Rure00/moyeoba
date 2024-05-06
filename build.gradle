@@ -55,6 +55,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	//stomp for message protocol
 	implementation group: 'org.webjars', name: 'stomp-websocket', version: '2.3.3-1'
+
+
 }
 
 tasks.withType(KotlinCompile).configureEach {
