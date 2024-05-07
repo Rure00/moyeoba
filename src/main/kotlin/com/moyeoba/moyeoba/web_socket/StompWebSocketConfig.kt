@@ -22,8 +22,10 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
         // 메시지를 발행하는 요청 url -> 메시지를 보낼 때
         registry.setApplicationDestinationPrefixes("/pub") // 구독자 -> 서버(메세지보낼때)
         // 메시지를 구독하는 요청 url -> 메시지를 받을 때
-        registry.enableSimpleBroker("/sub") // 브로커 -> 구독자들(메세지받을때)
+        registry.enableSimpleBroker("/sub/") // 브로커 -> 구독자들(메세지받을때)
     }
+
+
 
 /*
     override fun configureClientInboundChannel(registration: ChannelRegistration) {
