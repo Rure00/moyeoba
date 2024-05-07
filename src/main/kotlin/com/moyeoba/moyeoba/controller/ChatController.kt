@@ -24,6 +24,8 @@ class ChatController {
 
         println("Get Message) ${message.sender} to ${message.receiver}: ${message.data}")
 
+        simpleMessage.send("/sub/", message)
+
         return null
     }
 }
