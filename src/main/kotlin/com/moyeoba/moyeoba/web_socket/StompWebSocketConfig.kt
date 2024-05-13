@@ -25,6 +25,11 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/sub") // 브로커 -> 구독자들(메세지받을때)
     }
 
+    override fun configureClientInboundChannel(registration: ChannelRegistration) {
+        super.configureClientInboundChannel(registration)
+        registration.interceptors()
+    }
+
 
 
 /*
