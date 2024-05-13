@@ -18,7 +18,7 @@ class WebSocketConfig: WebSocketConfigurer {
 
     override fun registerWebSocketHandlers(registry: WebSocketHandlerRegistry) {
         registry
-            .addHandler(webSocketHandler, "/ws/chat/{session_id}")
+            .addHandler(webSocketHandler, "/ws/chat")
             .setAllowedOrigins("*");
     }
 
