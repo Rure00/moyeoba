@@ -30,6 +30,8 @@ MoyeobaApplicationTests.kt
 CookieManager.kt
 
 
+StompWebSocketConfig.kt
+
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
