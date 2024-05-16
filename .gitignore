@@ -28,7 +28,6 @@ application.properties
 application-API-KEY.properties
 MoyeobaApplicationTests.kt
 CookieManager.kt
-StompWebSocketConfig.kt
 
 out/
 !**/src/main/**/out/
