@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.runApplication
 
 //TODO: exclude 부분 삭제하기
-@SpringBootApplication(exclude = [SecurityAutoConfiguration::class])
+@SpringBootApplication(/*exclude = [SecurityAutoConfiguration::class]*/)
 class MoyeobaApplication
 fun main(args: Array<String>) {
 	runApplication<MoyeobaApplication>(*args)
