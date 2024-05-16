@@ -1,13 +1,21 @@
 package com.moyeoba.moyeoba.web_socket
 
+import org.apache.tomcat.util.http.parser.Cookie
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.server.ServerHttpRequest
+import org.springframework.http.server.ServerHttpResponse
+import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.messaging.simp.config.ChannelRegistration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
+import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer
+import org.springframework.web.socket.server.HandshakeInterceptor
+import org.springframework.web.util.WebUtils
+import java.lang.Exception
 
 
 @EnableWebSocketMessageBroker
@@ -16,6 +24,31 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
 
     @Autowired
     private lateinit var inboundInterceptor: InboundInterceptor
+
+    @Bean
+    fun httpSessionHandshakeInterceptor(): HandshakeInterceptor {
+        return object: HandshakeInterceptor {
+            override fun beforeHandshake(
+                request: ServerHttpRequest,
+                response: ServerHttpResponse,
+                wsHandler: WebSocketHandler,
+                attributes: MutableMap<String, Any>
+            ): Boolean {
+
+                return true
+            }
+
+            override fun afterHandshake(
+                request: ServerHttpRequest,
+                response: ServerHttpResponse,
+                wsHandler: WebSocketHandler,
+                exception: Exception?
+            ) {
+                println("StompWebSocketConfig: httpSessionHandshakeInterceptor) Handshake is Complete")
+            }
+
+        }
+    }
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry.addEndpoint("/web/chat") // 여기로 웹소켓 생성
