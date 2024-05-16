@@ -8,6 +8,7 @@ object PermittedPath {
         "/test/*",
         "/user/login",
         "/user/refresh",
+        "/web/chat/*",
 
 
 
