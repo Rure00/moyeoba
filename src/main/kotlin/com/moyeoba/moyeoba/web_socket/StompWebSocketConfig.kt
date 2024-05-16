@@ -28,7 +28,7 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
 
     override fun configureClientInboundChannel(registration: ChannelRegistration) {
         super.configureClientInboundChannel(registration)
-        registration.interceptors()
+        registration.interceptors(InboundInterceptor())
     }
 
 
