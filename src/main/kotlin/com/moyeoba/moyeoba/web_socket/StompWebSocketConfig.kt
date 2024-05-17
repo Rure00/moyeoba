@@ -40,7 +40,7 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
             ): Boolean {
                 val accessToken = (request as ServletServerHttpRequest)
                     .servletRequest.cookies
-                    .firstOrNull {
+                    ?.firstOrNull {
                         it.name == "access_token"
                     }?.value
 
