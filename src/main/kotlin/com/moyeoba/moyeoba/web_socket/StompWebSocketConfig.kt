@@ -53,7 +53,8 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry.addEndpoint("/web/chat") // 여기로 웹소켓 생성
             .setAllowedOriginPatterns("*")
-            //.withSockJS()
+            .withSockJS()
+            .setInterceptors(httpSessionHandshakeInterceptor())
     }
 
 
