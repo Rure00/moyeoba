@@ -1,5 +1,7 @@
 package com.moyeoba.moyeoba.web_socket
 
+import com.moyeoba.moyeoba.jwt.TokenManager
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.tomcat.util.http.parser.Cookie
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
@@ -18,12 +20,14 @@ import org.springframework.web.util.WebUtils
 import java.lang.Exception
 
 
+private val logger = KotlinLogging.logger {}
+
 @EnableWebSocketMessageBroker
 @Configuration
 class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
 
     @Autowired
-    private lateinit var inboundInterceptor: InboundInterceptor
+    private lateinit var tokenManager: TokenManager
 
     @Bean
     fun httpSessionHandshakeInterceptor(): HandshakeInterceptor {
@@ -34,8 +38,21 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
                 wsHandler: WebSocketHandler,
                 attributes: MutableMap<String, Any>
             ): Boolean {
+                val accessToken = (request as ServletServerHttpRequest)
+                    .servletRequest.cookies
+                    .firstOrNull {
+                        it.name == "access_token"
+                    }?.value
 
-                return false
+                if(accessToken.isNullOrEmpty()) {
+                    logger.info { "HandShake Interceptor) Token Not Found" }
+                    return false
+                } else if(!tokenManager.validateToken(accessToken)) {
+                    logger.info { "HandShake Interceptor) Invalid Token" }
+                    return false
+                }
+
+                return true
             }
 
             override fun afterHandshake(
@@ -44,7 +61,7 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
                 wsHandler: WebSocketHandler,
                 exception: Exception?
             ) {
-                println("StompWebSocketConfig: httpSessionHandshakeInterceptor) Handshake is Complete")
+                logger.info { "HandShake Interceptor) Connected." }
             }
 
         }
@@ -64,35 +81,5 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
         // 메시지를 구독하는 요청 url -> 메시지를 받을 때
         registry.enableSimpleBroker("/sub") // 브로커 -> 구독자들(메세지받을때)
     }
-
-    override fun configureClientInboundChannel(registration: ChannelRegistration) {
-        super.configureClientInboundChannel(registration)
-        registration.interceptors(inboundInterceptor)
-    }
-
-
-
-/*
-    override fun configureClientInboundChannel(registration: ChannelRegistration) {
-        println("Configuring task executor for Client Inbound Channel")
-        registration.taskExecutor().corePoolSize(4)
-        registration.taskExecutor().maxPoolSize(4)
-
-        val executor = ThreadPoolTaskExecutor()
-        executor.corePoolSize = 2
-        executor.maxPoolSize = 2
-        executor.initialize()
-
-        registration.taskExecutor(executor)
-
-    }
-
-    override fun configureClientOutboundChannel(registration: ChannelRegistration) {
-        super.configureClientOutboundChannel(registration)
-        registration.taskExecutor().corePoolSize(4)
-        registration.taskExecutor().maxPoolSize(4)
-    }
-
- */
 
 }
