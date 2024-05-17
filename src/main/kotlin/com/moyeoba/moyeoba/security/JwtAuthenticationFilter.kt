@@ -23,7 +23,6 @@ class JwtAuthenticationFilter(private val tokenManager: TokenManager): OncePerRe
                 else if(cookie.name == "refresh_token") refreshToken = cookie.value
             }
             println("--------------------------------------------------------------")
-
         }
 
         if(accessToken == null) {
