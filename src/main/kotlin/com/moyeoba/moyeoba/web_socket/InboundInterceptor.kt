@@ -1,6 +1,7 @@
 package com.moyeoba.moyeoba.web_socket
 
 import com.moyeoba.moyeoba.jwt.TokenManager
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.messaging.Message
 import org.springframework.messaging.MessageChannel
@@ -9,6 +10,8 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor
 import org.springframework.messaging.support.ChannelInterceptor
 import org.springframework.stereotype.Component
 import java.util.concurrent.ConcurrentHashMap
+
+private val logger = KotlinLogging.logger {}
 
 @Component
 class InboundInterceptor(

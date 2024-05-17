@@ -35,7 +35,7 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
                 attributes: MutableMap<String, Any>
             ): Boolean {
 
-                return true
+                return false
             }
 
             override fun afterHandshake(
