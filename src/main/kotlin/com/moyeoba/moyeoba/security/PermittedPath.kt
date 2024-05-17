@@ -7,6 +7,7 @@ object PermittedPath {
         "/v3/api-docs/**",
         "/test/**",
         "/user/login",
+        "/user/login/**",
         "/user/refresh",
         "/web/chat/**",
 
