@@ -2,6 +2,7 @@ package com.moyeoba.moyeoba.web_socket
 
 import com.moyeoba.moyeoba.jwt.TokenManager
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
@@ -25,20 +26,9 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
         wsHandler: WebSocketHandler,
         attributes: MutableMap<String, Any>
     ): Boolean {
-        val cookies = (request as ServletServerHttpRequest)
-            .servletRequest.cookies
-
-        val accessToken = (request as ServletServerHttpRequest)
-            .servletRequest.cookies
-            ?.firstOrNull {
-                it.name == "access_token"
-            }?.value
-
-        cookies.forEach {
-            logger.debug { "HandShake Interceptor) ${it.name}: ${it.value}" }
-        }
-
-
+        val accessToken = (request as HttpServletRequest)
+            .getHeaders("AccessToken").toList()
+            .firstOrNull()
 
         if(accessToken.isNullOrEmpty()) {
             logger.info { "HandShake Interceptor) Token Not Found" }

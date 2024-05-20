@@ -29,6 +29,7 @@ application-API-KEY.properties
 MoyeobaApplicationTests.kt
 CookieManager.kt
 
+
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
