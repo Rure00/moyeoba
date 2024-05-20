@@ -26,9 +26,9 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
         wsHandler: WebSocketHandler,
         attributes: MutableMap<String, Any>
     ): Boolean {
-        val accessToken = (request as HttpServletRequest)
-            .getHeaders("AccessToken").toList()
-            .firstOrNull()
+        val accessToken = (request as ServletServerHttpRequest)
+            .headers["AccessToken"]
+            ?.firstOrNull()
 
         if(accessToken.isNullOrEmpty()) {
             logger.info { "HandShake Interceptor) Token Not Found" }
