@@ -28,50 +28,14 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
 
     @Autowired
     private lateinit var tokenManager: TokenManager
-
-    @Bean
-    fun httpSessionHandshakeInterceptor(): HandshakeInterceptor {
-        return object: HandshakeInterceptor {
-            override fun beforeHandshake(
-                request: ServerHttpRequest,
-                response: ServerHttpResponse,
-                wsHandler: WebSocketHandler,
-                attributes: MutableMap<String, Any>
-            ): Boolean {
-                val accessToken = (request as ServletServerHttpRequest)
-                    .servletRequest.cookies
-                    ?.firstOrNull {
-                        it.name == "access_token"
-                    }?.value
-
-                if(accessToken.isNullOrEmpty()) {
-                    logger.info { "HandShake Interceptor) Token Not Found" }
-                    return false
-                } else if(!tokenManager.validateToken(accessToken)) {
-                    logger.info { "HandShake Interceptor) Invalid Token" }
-                    return false
-                }
-
-                return true
-            }
-
-            override fun afterHandshake(
-                request: ServerHttpRequest,
-                response: ServerHttpResponse,
-                wsHandler: WebSocketHandler,
-                exception: Exception?
-            ) {
-                logger.info { "HandShake Interceptor) Connected." }
-            }
-
-        }
-    }
+    @Autowired
+    private lateinit var httpSessionHandshakeInterceptor: MyHandShakeInterceptor
 
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry.addEndpoint("/web/chat") // 여기로 웹소켓 생성
             .setAllowedOriginPatterns("*")
             .withSockJS()
-            .setInterceptors(httpSessionHandshakeInterceptor())
+            .setInterceptors(httpSessionHandshakeInterceptor)
     }
 
 
