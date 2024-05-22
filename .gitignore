@@ -28,7 +28,7 @@ application.properties
 application-API-KEY.properties
 MoyeobaApplicationTests.kt
 CookieManager.kt
-
+firebase_service_key.json
 
 out/
 !**/src/main/**/out/
