@@ -3,7 +3,6 @@ package com.moyeoba.moyeoba.data.dto.response
 data class ChatResponseDto(
     val id: Long,
     val roomId: Long,
-    val topicUrl: String,
     val body: String,
     val sender: String,
     val date: String
