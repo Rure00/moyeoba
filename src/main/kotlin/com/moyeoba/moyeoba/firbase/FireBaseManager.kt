@@ -6,14 +6,15 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingException
 import com.google.firebase.messaging.Message
-import com.moyeoba.moyeoba.data.chat.UserMessage
+import com.moyeoba.moyeoba.data.chat.RawMessage
+import com.moyeoba.moyeoba.data.dto.response.ChatResponseDto
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import java.io.FileInputStream
 
 private val logger = KotlinLogging.logger {}
 
-class FcmManager {
+class FireBaseManager {
     @Value("\${firebase_sdk_dir}")
     private lateinit var firebaseSdkPath: String
 
@@ -27,31 +28,32 @@ class FcmManager {
         FirebaseMessaging.getInstance()
     }
 
-    fun sendToSingleDevice(targetToken: String?, userMessage: UserMessage?) {
+    fun sendToSingleDevice(targetToken: String, dto: ChatResponseDto) {
         val message = Message.builder()
-            //TODO.putData()
+            .putAllData(dto.toMap())
             .setToken(targetToken)
             .build()
 
+
         try {
             fireBaseInstance.send(message)
-            logger.info { "FcmManager:sendToSingleDevice) Successfully sent message" }
+            logger.info { "FirebaseManager:sendToSingleDevice) Successfully sent message" }
         } catch (exception: FirebaseMessagingException) {
-            logger.error { "FcmManager:sendToSingleDevice: $exception" }
+            logger.error { "FirebaseManager:sendToSingleDevice: $exception" }
         }
     }
 
-    fun sendToTopic(topicUrl: String?, userMessage: UserMessage?) {
+    fun sendToTopic(topicUrl: String, dto: ChatResponseDto) {
         val message = Message.builder()
-            //TODO.putData()
+            .putAllData(dto.toMap())
             .setTopic(topicUrl)
             .build()
 
         try {
             fireBaseInstance.send(message)
-            logger.info { "FcmManager:sendToTopic) Successfully sent message" }
+            logger.info { "FirebaseManager:sendToTopic) Successfully sent message" }
         } catch (exception: FirebaseMessagingException) {
-            logger.error { "FcmManager:sendToTopic: $exception" }
+            logger.error { "FirebaseManager:sendToTopic: $exception" }
         }
     }
 }
