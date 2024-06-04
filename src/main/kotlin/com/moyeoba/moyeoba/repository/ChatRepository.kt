@@ -8,5 +8,5 @@ import java.util.*
 
 @Repository
 interface ChatRepository: JpaRepository<ChatMessage, Long> {
-    fun insert(chatMessage: ChatMessage): ChatMessage
+    fun save(chatMessage: ChatMessage): ChatMessage
 }
