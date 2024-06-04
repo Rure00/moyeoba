@@ -13,7 +13,7 @@ class ChatDaoImpl: ChatDao {
     private lateinit var chatRepository: ChatRepository
 
     override fun saveChat(chatMessage: ChatMessage): ChatResponseDto {
-        val entity = chatRepository.insert(chatMessage)
+        val entity = chatRepository.save(chatMessage)
 
         return ChatResponseDto(
             id = entity.id!!,
