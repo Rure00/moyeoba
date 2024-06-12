@@ -16,6 +16,7 @@ class User(): Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 
+    var token: String? = null
     var email: String? = null
 
     var naverId: String? = null

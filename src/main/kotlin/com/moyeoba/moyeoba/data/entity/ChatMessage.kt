@@ -10,9 +10,10 @@ class ChatMessage(
     val roomId: Long,
     val body: String,
     val sender: String,
-    val date: LocalDateTime
-) {
+    val date: LocalDateTime,
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+) {
+
 }

@@ -4,6 +4,7 @@ import com.moyeoba.moyeoba.data.entity.User
 
 
 interface UserDao {
+    fun findTokens(idList: List<Long>): List<String>
     fun getEmail(userId: Long): String?
     fun saveEmail(userId: Long, email: String): Boolean
     fun getOrCreateKakao(id: Long): User

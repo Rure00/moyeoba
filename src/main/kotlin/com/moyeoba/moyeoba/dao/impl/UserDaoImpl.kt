@@ -15,6 +15,12 @@ class UserDaoImpl: UserDao {
     private lateinit var userRepository: UserRepository
 
 
+    override fun findTokens(idList: List<Long>): List<String>
+        = idList.map {
+            userRepository.findById(it).get().token?: throw Exception("id:$it) Token is Not Registered.")
+        }
+
+
     override fun getEmail(userId: Long): String?  {
         val user = userRepository.findById(userId)
 
@@ -25,7 +31,6 @@ class UserDaoImpl: UserDao {
             return null
         }
     }
-
 
     override fun saveEmail(userId: Long, email: String): Boolean {
         val optional = userRepository.findById(userId)

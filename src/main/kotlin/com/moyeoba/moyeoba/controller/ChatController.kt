@@ -1,37 +1,57 @@
 package com.moyeoba.moyeoba.controller
 
-
-import com.moyeoba.moyeoba.data.chat.RawMessage
-import com.moyeoba.moyeoba.data.dto.response.ChatResponseDto
-import com.moyeoba.moyeoba.firbase.FireBaseManager
+import com.moyeoba.moyeoba.data.dto.request.CreateChatRoomRequestDto
+import com.moyeoba.moyeoba.data.dto.request.ExitRoomRequestDto
+import com.moyeoba.moyeoba.data.dto.request.InviteRequestDto
+import com.moyeoba.moyeoba.data.dto.request.RegisterEmailDto
+import com.moyeoba.moyeoba.data.dto.response.GetChatRoomsResponseDto
+import com.moyeoba.moyeoba.security.UserDetailsImpl
+import com.moyeoba.moyeoba.service.ChatRoomService
 import com.moyeoba.moyeoba.service.ChatService
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.messaging.handler.annotation.MessageMapping
-import org.springframework.messaging.simp.SimpMessageSendingOperations
-import org.springframework.stereotype.Controller
+import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
-
-@Controller
+@RestController
+@RequestMapping("/chat")
 class ChatController {
     @Autowired
     private lateinit var chatService: ChatService
     @Autowired
-    private lateinit var simpleMessage: SimpMessageSendingOperations
-    private val  firebaseManager = FireBaseManager()
+    private lateinit var chatRoomService: ChatRoomService
 
-    @MessageMapping("/chat") //여기로 전송되면 메서드 호출 -> WebSocketConfig prefixes 에서 적용한건 앞에 생략
-    fun chat(rawMessage: RawMessage): ChatResponseDto {
-        val dto = chatService.addChat(rawMessage)
-        val roomId = dto.roomId
+    @PostMapping("/create/room")
+    fun createChatRoom(@RequestBody requestDto: CreateChatRoomRequestDto,
+                       @AuthenticationPrincipal userDetails: UserDetailsImpl
+    ): ResponseEntity<Boolean> {
+        if(requestDto.userId != userDetails.user.id) {
+            return ResponseEntity.badRequest().build()
+        }
 
-        firebaseManager.sendToTopic(
-            rawMessage.topicUrl, dto
-        )
-
-        simpleMessage.convertAndSend("/sub/${roomId}", Json.encodeToString(dto))
-
-        return dto
+        return ResponseEntity.ok(chatRoomService.createChatRoom(
+            requestDto.roomName,
+            requestDto.userList.apply { add(requestDto.userId) }
+        ))
     }
+
+    @PostMapping("/invite")
+    fun inviteUsers(@RequestBody requestDto: InviteRequestDto): ResponseEntity<Boolean> {
+        return ResponseEntity.ok(chatRoomService.invite(requestDto.roomId, requestDto.userIdList))
+    }
+    @PostMapping("/exit")
+    fun exitRoom(@RequestBody requestDto: ExitRoomRequestDto): ResponseEntity<Boolean> {
+        return ResponseEntity.ok(chatRoomService.exit(requestDto.roomId, requestDto.userId))
+    }
+
+    @GetMapping("/get")
+    fun getRooms(@AuthenticationPrincipal userDetails: UserDetailsImpl): ResponseEntity<GetChatRoomsResponseDto> {
+        return ResponseEntity.ok(chatRoomService.getRooms(userDetails.user.id))
+    }
+
+
 }

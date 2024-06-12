@@ -118,7 +118,6 @@ class UserController{
 
     @PostMapping("/register-email")
     fun resisterEmail(@RequestBody registerEmailDto: RegisterEmailDto,
-                      request: HttpServletRequest,
                       @AuthenticationPrincipal userDetails: UserDetailsImpl
     ): ResponseEntity<Boolean> {
         val userId = userDetails.user.id!!
