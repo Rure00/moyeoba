@@ -7,6 +7,7 @@ import org.threeten.bp.LocalDateTime
 data class RawMessage(
     var roomId: Long,
     var userId: Long,
+    var userName: String,
     var topicUrl: String,
     var body: String,
     var sender: String,

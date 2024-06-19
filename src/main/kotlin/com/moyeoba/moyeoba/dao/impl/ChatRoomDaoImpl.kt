@@ -16,7 +16,7 @@ class ChatRoomDaoImpl: ChatRoomDao {
 
     override fun create(roomName: String, tokenList: List<String>): Long? {
         val newRoom = ChattingRoom(
-            name = roomName, userTokens = tokenList.toMutableList()
+            name = roomName
         )
 
         try {
@@ -43,5 +43,9 @@ class ChatRoomDaoImpl: ChatRoomDao {
 
         val room = roomOptional.get()
         room.userTokens.remove(token)
+    }
+
+    override fun getRoomsByUserId(userId: Long): List<ChattingRoom> {
+        TODO("Not yet implemented")
     }
 }

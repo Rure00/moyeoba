@@ -6,4 +6,5 @@ interface UserService {
     fun authorize(token: String)
     fun saveEmail(userId: String, email: String): Boolean
     fun saveEmail(userId: Long, email: String): Boolean
+    fun saveToken(id: Long, token: String): Boolean
 }

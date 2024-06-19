@@ -1,6 +1,7 @@
 package com.moyeoba.moyeoba.service.impl
 
 import com.google.firebase.messaging.FirebaseMessaging
+import com.moyeoba.moyeoba.dao.ChatMessageDao
 import com.moyeoba.moyeoba.dao.ChatRoomDao
 import com.moyeoba.moyeoba.dao.UserDao
 import com.moyeoba.moyeoba.data.dto.response.GetChatRoomsResponseDto
@@ -17,6 +18,8 @@ class ChatRoomServiceImpl: ChatRoomService {
     private lateinit var chatRoomDao: ChatRoomDao
     @Autowired
     private lateinit var userDao: UserDao
+    @Autowired
+    private lateinit var chatMessageDao: ChatMessageDao
 
     override fun createChatRoom(roomName: String, userIdList: List<Long>): Boolean {
         val tokens = userDao.findTokens(userIdList)
@@ -79,25 +82,23 @@ class ChatRoomServiceImpl: ChatRoomService {
     }
 
     override fun getRooms(userId: Long): GetChatRoomsResponseDto {
-        var result: GetChatRoomsResponseDto
+        val result = GetChatRoomsResponseDto(
+            mutableListOf(), mutableListOf()
+        )
+
         try {
             val roomIdList = mutableListOf<Long>()
             val lastMsgList = mutableListOf<String>()
+
             chatRoomDao.getRoomsByUserId(userId).forEach {
                 roomIdList.add(it.id!!)
-                lastMsgList.add(it.)
+                lastMsgList.add(chatMessageDao.getLastMessageBody(it.id))
             }
-
-
-            result = GetChatRoomsResponseDto(
-
-            )
         } catch (e: Exception) {
             e.printStackTrace()
-            return false
         }
 
-        return
+        return result
     }
 
 

@@ -22,6 +22,12 @@ class User(): Serializable {
     var naverId: String? = null
     var kakaoId: Long? = null
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    val chatRooms = mutableSetOf<UserChattingRoom>()
+
+    @Column()
+    var deviceToken: String = ""
+
     var role: UserRoleEnum = UserRoleEnum.Member
 
     constructor(kakaoId: Long): this() {

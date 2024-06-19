@@ -5,17 +5,14 @@ import com.moyeoba.moyeoba.data.dto.request.ExitRoomRequestDto
 import com.moyeoba.moyeoba.data.dto.request.InviteRequestDto
 import com.moyeoba.moyeoba.data.dto.request.RegisterEmailDto
 import com.moyeoba.moyeoba.data.dto.response.GetChatRoomsResponseDto
+import com.moyeoba.moyeoba.data.dto.response.GetMessagesResponse
 import com.moyeoba.moyeoba.security.UserDetailsImpl
 import com.moyeoba.moyeoba.service.ChatRoomService
 import com.moyeoba.moyeoba.service.ChatService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/chat")
@@ -48,9 +45,17 @@ class ChatController {
         return ResponseEntity.ok(chatRoomService.exit(requestDto.roomId, requestDto.userId))
     }
 
-    @GetMapping("/get")
+    @GetMapping("/get/rooms")
     fun getRooms(@AuthenticationPrincipal userDetails: UserDetailsImpl): ResponseEntity<GetChatRoomsResponseDto> {
-        return ResponseEntity.ok(chatRoomService.getRooms(userDetails.user.id))
+        return ResponseEntity.ok(chatRoomService.getRooms(userDetails.user.id!!))
+    }
+
+    @GetMapping("/get/recent_messages")
+    fun getMessages(
+        @RequestParam(value = "roomId") roomId: Long,
+        @RequestParam(value = "page") page: Int
+    ): ResponseEntity<GetMessagesResponse> {
+        return ResponseEntity.ok(chatService.getMessages(roomId, page))
     }
 
 
