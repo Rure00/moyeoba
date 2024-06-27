@@ -6,6 +6,6 @@ import com.moyeoba.moyeoba.data.dto.response.GetMessagesResponse
 import org.springframework.data.domain.Page
 
 interface ChatService {
-    fun addChat(rawMessage: RawMessage): ChatResponseDto
+    fun addChat(rawMessage: RawMessage, userId: Long): ChatResponseDto
     fun getMessages(roomId: Long, page: Int): GetMessagesResponse
 }

@@ -14,6 +14,10 @@ class UserDaoImpl: UserDao {
     @Autowired
     private lateinit var userRepository: UserRepository
 
+    override fun findUser(userId: Long): User? {
+        return userRepository.findById(userId).get()
+    }
+
 
     override fun findTokens(idList: List<Long>): List<String>
         = idList.map {
@@ -44,12 +48,13 @@ class UserDaoImpl: UserDao {
         } else return false
     }
 
-    override fun getOrCreateKakao(id: Long): User {
+    override fun getOrCreateKakao(id: Long, name: String): User {
         val optional = userRepository.findByKakaoId(id)
 
         return if (optional.isPresent) optional.get()
         else {
             val newUser = User(
+                nickname = name,
                 kakaoId = id
             )
             userRepository.save(newUser)
@@ -57,12 +62,13 @@ class UserDaoImpl: UserDao {
     }
 
 
-    override fun getOrCreateNaver(id: String): User {
+    override fun getOrCreateNaver(id: String, name: String): User {
         val optional = userRepository.findByNaverId(id)
 
         return if (optional.isPresent) optional.get()
         else {
             val newUser = User(
+                nickname = name,
                 naverId = id
             )
             userRepository.save(newUser)

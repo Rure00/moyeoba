@@ -2,6 +2,7 @@ package com.moyeoba.moyeoba.service.impl
 
 import com.moyeoba.moyeoba.dao.ChatMessageDao
 import com.moyeoba.moyeoba.dao.ChattingRoomDao
+import com.moyeoba.moyeoba.dao.UserDao
 import com.moyeoba.moyeoba.data.chat.RawMessage
 import com.moyeoba.moyeoba.data.dto.response.ChatResponseDto
 import com.moyeoba.moyeoba.data.dto.response.GetMessagesResponse
@@ -14,16 +15,20 @@ import org.springframework.stereotype.Component
 @Component
 class ChatServiceImpl: ChatService {
     @Autowired
+    private lateinit var userDao: UserDao
+    @Autowired
     private lateinit var chattingMessageDAO: ChatMessageDao
     @Autowired
     private lateinit var chattingRoomDao: ChattingRoomDao
 
-    override fun addChat(rawMessage: RawMessage): ChatResponseDto {
+    override fun addChat(rawMessage: RawMessage, userId: Long): ChatResponseDto {
         val room = chattingRoomDao.getChattingRoom(rawMessage.roomId)
+        val user = userDao.findUser(userId)!!
+
         val newMsg = ChattingMessage(
             chattingRoomId = room!!,
-            userId = rawMessage.userId,
-            userName = rawMessage.userName,
+            userId = user.id!!,
+            userName = user.nickname,
             body = rawMessage.body,
         )
 

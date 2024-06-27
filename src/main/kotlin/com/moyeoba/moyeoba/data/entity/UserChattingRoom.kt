@@ -14,6 +14,8 @@ class UserChattingRoom(
     @MapsId("chattingRoomId")
     @JoinColumn(name = "chatting_room_id")
     val chattingRoom: ChattingRoom,
+
+    var userNickname: String
 ){
     @EmbeddedId
     val id = UserChattingRoomId(user.id!!, chattingRoom.id!!)
