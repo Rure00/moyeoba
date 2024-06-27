@@ -2,6 +2,8 @@ package com.moyeoba.moyeoba.web_socket
 
 import com.moyeoba.moyeoba.jwt.TokenManager
 import com.moyeoba.moyeoba.service.UserService
+import com.moyeoba.moyeoba.web_socket.encrypt.ChatId
+import com.moyeoba.moyeoba.web_socket.encrypt.ChatIdEncryption
 import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +13,9 @@ import org.springframework.http.server.ServletServerHttpRequest
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.server.HandshakeInterceptor
+import org.springframework.web.socket.server.support.DefaultHandshakeHandler
 import java.lang.Exception
+import java.security.Principal
 
 private val logger = KotlinLogging.logger {}
 
@@ -22,6 +26,15 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
     private lateinit var userService: UserService
     @Autowired
     private lateinit var tokenManager: TokenManager
+    @Autowired
+    private lateinit var chatIdEncryption: ChatIdEncryption
+
+    /*TODO
+            - make it inherit DefaultHandShakeHandler
+            - on fun: determineUser, Generate uuId using userId and nickname
+            - add Map(uuId, User) to attribute
+            - on WebsocketController, access to attribute and get Map using uuid included in a RawMessage.
+         */
 
     override fun beforeHandshake(
         request: ServerHttpRequest,
@@ -33,6 +46,11 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
             .headers["AccessToken"]
             ?.firstOrNull()
 
+        val headers = (request as ServletServerHttpRequest).headers
+        headers.forEach {
+            println("${it.key}: ${it.value}")
+        }
+
         if(accessToken.isNullOrEmpty()) {
             logger.info { "HandShake Interceptor) Token Not Found" }
             //return false
@@ -43,12 +61,7 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
 
         return true
 
-        /*TODO
-            - make it inherit DefaultHandShakeHandler
-            - on fun: determineUser, Generate uuId using userId, roomId and nickname
-            - add Map(uuId, User) to attribute
-            - on WebsocketController, access to attribute and get Map using uuid included in a RawMessage.
-         */
+
 
 //        val userId = 1L//tokenManager.getUserIdFromToken(accessToken).toLong()
 //        val user = userService.findUser(userId)
@@ -67,6 +80,23 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
 //            return false
 //        }
     }
+
+//    override fun determineUser(
+//        request: ServerHttpRequest,
+//        wsHandler: WebSocketHandler,
+//        attributes: MutableMap<String, Any>
+//    ): Principal? {
+//        val accessToken = (request as ServletServerHttpRequest)
+//            .headers["AccessToken"]!!.first()
+//
+//        val userId = tokenManager.getUserIdFromToken(accessToken).toLong()
+//        val user = userService.findUser(userId)!!
+//        val encryption = chatIdEncryption.encrypt(
+//            ChatId(userId, user.nickname)
+//        )
+//
+//        return super.determineUser(request, wsHandler, attributes)
+//    }
 
     override fun afterHandshake(
         request: ServerHttpRequest,
