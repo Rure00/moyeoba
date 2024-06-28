@@ -5,8 +5,8 @@ import org.threeten.bp.LocalDateTime
 
 @Serializable
 data class RawMessage(
+    var userName: String,
     var roomId: Long,
     var topicUrl: String,
     var body: String,
-    var date: String,
 )
