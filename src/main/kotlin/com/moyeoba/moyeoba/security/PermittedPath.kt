@@ -5,9 +5,11 @@ object PermittedPath {
         "/swagger-ui/**",
         "/swagger-resources/**",
         "/v3/api-docs/**",
-        "/test/*",
+        "/test/**",
         "/user/login",
+        "/user/login/**",
         "/user/refresh",
+        "/web/chat/**",
 
 
 

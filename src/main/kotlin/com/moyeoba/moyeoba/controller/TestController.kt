@@ -37,7 +37,7 @@ class TestController {
         println("Current UTC Time: ${Instant.now()}")
 
         val accessCookie = ResponseCookie.from("access_token", pair.accessToken)
-                .domain("localhost:8080/*") //TODO: "moyeoba.com" 로 바꾸기
+                .domain("moyeoba.com") //TODO: "moyeoba.com" 로 바꾸기
                 .path("/")
                 .httpOnly(false)
                 .secure(false)
@@ -48,7 +48,7 @@ class TestController {
         println("maxAge Time: ${accessCookie.maxAge}")
 
         val refreshCookie = ResponseCookie.from("refresh_token", pair.refreshToken)
-                .domain("localhost") //TODO: "moyeoba.com" 로 바꾸기
+                .domain("moyeoba.com") //TODO: "moyeoba.com" 로 바꾸기
                 .path("/")
                 .httpOnly(false)
                 .secure(false)
