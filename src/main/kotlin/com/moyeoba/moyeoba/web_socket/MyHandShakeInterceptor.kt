@@ -26,8 +26,7 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
     private lateinit var userService: UserService
     @Autowired
     private lateinit var tokenManager: TokenManager
-    @Autowired
-    private lateinit var chatIdEncryption: ChatIdEncryption
+
 
     /*TODO
             - make it inherit DefaultHandShakeHandler
@@ -42,16 +41,26 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
         wsHandler: WebSocketHandler,
         attributes: MutableMap<String, Any>
     ): Boolean {
-        val accessToken = (request as ServletServerHttpRequest)
-            .headers["AccessToken"]
-            ?.firstOrNull()
+        println("It's a beforeHandshake!!")
 
-        val headers = (request as ServletServerHttpRequest).headers
-        headers.forEach {
-            println("${it.key}: ${it.value}")
+        var accessToken = ""
+        var refreshToken = ""
+        (request as ServletServerHttpRequest).servletRequest.cookies?.let {
+            println("--------------------------------------------------------------")
+            for(cookie in it) {
+                println("${cookie.name}: ${cookie.value}")
+                if(cookie.name == "access_token") accessToken = cookie.value
+                else if(cookie.name == "refresh_token") refreshToken = cookie.value
+            }
+            println("--------------------------------------------------------------")
         }
 
-        if(accessToken.isNullOrEmpty()) {
+//        val headers = (request as ServletServerHttpRequest).headers
+//        headers.forEach {
+//            println("${it.key}: ${it.value}")
+//        }
+
+        if(accessToken.isEmpty()) {
             logger.info { "HandShake Interceptor) Token Not Found" }
             //return false
         } else if(!tokenManager.validateToken(accessToken)) {

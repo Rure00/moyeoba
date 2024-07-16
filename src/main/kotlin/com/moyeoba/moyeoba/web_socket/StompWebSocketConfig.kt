@@ -1,6 +1,7 @@
 package com.moyeoba.moyeoba.web_socket
 
 import com.moyeoba.moyeoba.jwt.TokenManager
+import com.moyeoba.moyeoba.security.CustomInterceptor
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.apache.tomcat.util.http.parser.Cookie
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,6 +38,7 @@ class StompWebSocketConfig: WebSocketMessageBrokerConfigurer {
     override fun registerStompEndpoints(registry: StompEndpointRegistry) {
         registry.addEndpoint("/web/chat") // 여기로 웹소켓 생성
             .setAllowedOriginPatterns("*")
+            .setHandshakeHandler(CustomInterceptor())
             .withSockJS()
             .setInterceptors(httpSessionHandshakeInterceptor)
     }
