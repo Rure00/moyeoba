@@ -16,6 +16,7 @@ import org.springframework.messaging.handler.annotation.Headers
 import org.springframework.messaging.handler.annotation.MessageMapping
 import org.springframework.messaging.simp.SimpMessageSendingOperations
 import org.springframework.stereotype.Controller
+import java.time.LocalDateTime
 
 
 @Controller
@@ -36,13 +37,21 @@ class WebSocketController {
             println("${ele.key}: ${ele.value}")
         }
 
-        val dto = chatService.addChat(rawMessage, 1L)
-        val roomId = dto.roomId
-        firebaseManager.sendToTopic(
-            rawMessage.topicUrl, dto
+//        val dto = chatService.addChat(rawMessage, 1L)
+//        val roomId = dto.roomId
+//        firebaseManager.sendToTopic(
+//            rawMessage.topicUrl, dto
+//        )
+
+        val dto = ChatResponseDto(
+            id = 0,
+            roomId = rawMessage.roomId,
+            body = rawMessage.body,
+            sender = rawMessage.userName,
+            date = LocalDateTime.now().toString()
         )
 
-        simpleMessage.convertAndSend("/sub/${roomId}", Json.encodeToString(dto))
+        simpleMessage.convertAndSend("/sub/1", Json.encodeToString(dto))
 
         return dto
     }

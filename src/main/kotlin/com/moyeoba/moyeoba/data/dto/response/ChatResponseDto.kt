@@ -1,5 +1,8 @@
 package com.moyeoba.moyeoba.data.dto.response
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ChatResponseDto(
     val id: Long,
     val roomId: Long,

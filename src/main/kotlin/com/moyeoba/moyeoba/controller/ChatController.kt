@@ -26,6 +26,7 @@ class ChatController {
     fun createChatRoom(@RequestBody requestDto: CreateChatRoomRequestDto,
                        @AuthenticationPrincipal userDetails: UserDetailsImpl
     ): ResponseEntity<Boolean> {
+        //TODO: 바꾸기 -> user id를 직접적으로 이용하는건 보안 상 좋지 않음.
         if(requestDto.userId != userDetails.user.id) {
             return ResponseEntity.badRequest().build()
         }
