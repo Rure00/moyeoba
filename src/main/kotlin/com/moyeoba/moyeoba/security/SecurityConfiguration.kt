@@ -17,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity(debug = false)
 class SecurityConfiguration {
 
+    //TODO: 위 어노테이션 제거하기
+
     @Autowired
     private lateinit var tokenManager: TokenManager
 

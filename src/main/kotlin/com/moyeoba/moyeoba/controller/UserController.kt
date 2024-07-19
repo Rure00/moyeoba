@@ -5,6 +5,7 @@ import com.moyeoba.moyeoba.api.kakao.KakaoApiManager
 import com.moyeoba.moyeoba.api.naver.NaverApiManager
 import com.moyeoba.moyeoba.data.dto.request.LoginRequestDto
 import com.moyeoba.moyeoba.data.dto.request.RegisterEmailDto
+import com.moyeoba.moyeoba.data.dto.request.RegisterTokenDto
 import com.moyeoba.moyeoba.data.dto.response.LoginResponse
 import com.moyeoba.moyeoba.jwt.TokenManager
 import com.moyeoba.moyeoba.security.UserDetailsImpl
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.RequestEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
@@ -42,8 +44,8 @@ class UserController{
     fun login(@RequestBody loginRequestDto: LoginRequestDto, response: HttpServletResponse): ResponseEntity<LoginResponse> {
         val social = loginRequestDto.social
         val isAuthorized: SocialLoginResult = when(social) {
-            "kakao" -> kakaoApiManager.authorize(loginRequestDto.type, loginRequestDto.payload)
-            "naver" -> naverApiManager.authorize(loginRequestDto.type, loginRequestDto.payload)
+            "kakao" -> kakaoApiManager.authorize(loginRequestDto.type, loginRequestDto.payload, loginRequestDto.nickname)
+            "naver" -> naverApiManager.authorize(loginRequestDto.type, loginRequestDto.payload, loginRequestDto.nickname)
             else -> return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .build()
@@ -118,7 +120,6 @@ class UserController{
 
     @PostMapping("/register-email")
     fun resisterEmail(@RequestBody registerEmailDto: RegisterEmailDto,
-                      request: HttpServletRequest,
                       @AuthenticationPrincipal userDetails: UserDetailsImpl
     ): ResponseEntity<Boolean> {
         val userId = userDetails.user.id!!
@@ -141,4 +142,16 @@ class UserController{
             .header(HttpHeaders.SET_COOKIE, pair.refreshToken.toString())
             .body(true)
     }
+
+    @PostMapping("/token/registration")
+    fun resistToken(
+        @RequestBody registerTokenDto: RegisterTokenDto,
+        @AuthenticationPrincipal userDetails: UserDetailsImpl
+    ): ResponseEntity<Boolean>
+        = ResponseEntity.status(HttpStatus.OK)
+            .body(userService.saveToken(userDetails.user.id!!, registerTokenDto.token))
+
+
+
+
 }

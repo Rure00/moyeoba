@@ -22,10 +22,15 @@ bin/
 *.iws
 *.iml
 *.ipr
+
+
 application.properties
 application-API-KEY.properties
 MoyeobaApplicationTests.kt
 CookieManager.kt
+firebase_service_key.json
+src/test/
+
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/

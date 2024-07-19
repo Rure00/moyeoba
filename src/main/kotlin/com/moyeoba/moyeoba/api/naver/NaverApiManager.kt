@@ -27,7 +27,7 @@ class NaverApiManager {
     @Value("\${naver_client_secret}")
     private lateinit var naverClientSecret: String
 
-    fun authorize(type: String, payload: String): SocialLoginResult {
+    fun authorize(type: String, payload: String, name: String): SocialLoginResult {
         val token = if(type == "code")
             getToken(payload)?.access_token
         else payload
@@ -35,7 +35,7 @@ class NaverApiManager {
         if(token.isNullOrEmpty()) return SocialLoginResult(-1, SocialLoginResult.LoginFlag.Error)
 
         val user = getUserProfile(token)?.let {
-            userDao.getOrCreateNaver(it.response.id)
+            userDao.getOrCreateNaver(it.response.id, name)
         }
 
         return if(userDao.getEmail(user!!.id!!).isNullOrEmpty()) {
