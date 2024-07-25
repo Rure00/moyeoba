@@ -44,8 +44,8 @@ class UserController{
     fun login(@RequestBody loginRequestDto: LoginRequestDto, response: HttpServletResponse): ResponseEntity<LoginResponse> {
         val social = loginRequestDto.social
         val isAuthorized: SocialLoginResult = when(social) {
-            "kakao" -> kakaoApiManager.authorize(loginRequestDto.type, loginRequestDto.payload, loginRequestDto.nickname)
-            "naver" -> naverApiManager.authorize(loginRequestDto.type, loginRequestDto.payload, loginRequestDto.nickname)
+            "kakao" -> kakaoApiManager.authorize(loginRequestDto.type, loginRequestDto.payload)
+            "naver" -> naverApiManager.authorize(loginRequestDto.type, loginRequestDto.payload)
             else -> return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .build()
