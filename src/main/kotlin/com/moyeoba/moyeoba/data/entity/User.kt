@@ -11,11 +11,13 @@ import java.util.Collections
 
 
 @Entity @Table(name = "users")
-class User(var nickname: String): Serializable {
+class User(): Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
+
+    var nickname: String? = null
 
     var token: String? = null
     var email: String? = null
@@ -31,12 +33,10 @@ class User(var nickname: String): Serializable {
 
     var role: UserRoleEnum = UserRoleEnum.Member
 
-    constructor(nickname: String, kakaoId: Long): this(nickname = "") {
-        this.nickname = nickname
+    constructor(kakaoId: Long): this() {
         this.kakaoId = kakaoId
     }
-    constructor(nickname: String, naverId: String): this(nickname = "") {
-        this.nickname = nickname
+    constructor(naverId: String): this() {
         this.naverId = naverId
     }
 }

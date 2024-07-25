@@ -2,20 +2,24 @@ package com.moyeoba.moyeoba.web_socket
 
 import com.moyeoba.moyeoba.jwt.TokenManager
 import com.moyeoba.moyeoba.service.UserService
-import com.moyeoba.moyeoba.web_socket.encrypt.ChatId
-import com.moyeoba.moyeoba.web_socket.encrypt.ChatIdEncryption
+import com.moyeoba.moyeoba.web_socket.session.SessionUser
+import com.moyeoba.moyeoba.web_socket.session.SessionUserEncryption
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpRequest
+import org.springframework.http.server.ServletServerHttpResponse
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.server.HandshakeInterceptor
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
-import java.lang.Exception
 import java.security.Principal
+import java.util.logging.Logger
+import kotlin.random.Random
+
 
 private val logger = KotlinLogging.logger {}
 
@@ -26,6 +30,8 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
     private lateinit var userService: UserService
     @Autowired
     private lateinit var tokenManager: TokenManager
+    @Autowired
+    private lateinit var sessionUserEncryption: SessionUserEncryption
 
 
     /*TODO
@@ -55,13 +61,10 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
             println("--------------------------------------------------------------")
         }
 
-//        val headers = (request as ServletServerHttpRequest).headers
-//        headers.forEach {
-//            println("${it.key}: ${it.value}")
-//        }
 
         if(accessToken.isEmpty()) {
             logger.info { "HandShake Interceptor) Token Not Found" }
+            //TODO: 테스트 끝나면 활성화
             //return false
         } else if(!tokenManager.validateToken(accessToken)) {
             logger.info { "HandShake Interceptor) Invalid Token" }
@@ -69,43 +72,7 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
         }
 
         return true
-
-
-
-//        val userId = 1L//tokenManager.getUserIdFromToken(accessToken).toLong()
-//        val user = userService.findUser(userId)
-//        if(user != null) {
-//            val userDetails = UserDetailsImpl(user)
-//            val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
-//            SecurityContextHolder.getContext().authentication = authentication
-//
-//            if (authentication.isAuthenticated) {
-//                attributes["user${user.id}"] = authentication.principal;
-//            }
-//
-//            return true
-//        } else {
-//            myLogger.info { "HandShake Interceptor) Invalid User Id" }
-//            return false
-//        }
     }
-
-//    override fun determineUser(
-//        request: ServerHttpRequest,
-//        wsHandler: WebSocketHandler,
-//        attributes: MutableMap<String, Any>
-//    ): Principal? {
-//        val accessToken = (request as ServletServerHttpRequest)
-//            .headers["AccessToken"]!!.first()
-//
-//        val userId = tokenManager.getUserIdFromToken(accessToken).toLong()
-//        val user = userService.findUser(userId)!!
-//        val encryption = chatIdEncryption.encrypt(
-//            ChatId(userId, user.nickname)
-//        )
-//
-//        return super.determineUser(request, wsHandler, attributes)
-//    }
 
     override fun afterHandshake(
         request: ServerHttpRequest,
@@ -114,5 +81,6 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
         exception: Exception?
     ) {
         logger.info { "HandShake Interceptor) Connected." }
+
     }
 }

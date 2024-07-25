@@ -30,14 +30,14 @@ class KakaoApiManager {
     private val redirectUrl = "http://localhost:8080/login/callback/kakao"
 
 
-    fun authorize(type: String, payload: String, name: String): SocialLoginResult {
+    fun authorize(type: String, payload: String): SocialLoginResult {
         val token = if(type == "code")
                         getToken(payload)?.access_token
                     else payload
         if(token.isNullOrEmpty()) return SocialLoginResult(-1, SocialLoginResult.LoginFlag.Error)
 
         val user = getUserProfile(token)?.let {
-            userDao.getOrCreateKakao(it.id, name)
+            userDao.getOrCreateKakao(it.id)
         }
 
         return if(userDao.getEmail(user!!.id!!).isNullOrEmpty()) {

@@ -28,7 +28,8 @@ class ChatServiceImpl: ChatService {
         val newMsg = ChattingMessage(
             chattingRoomId = room!!,
             userId = user.id!!,
-            userName = user.nickname,
+            //TODO: nickname!! 으로 바꾸기
+            userName = user.nickname?: "이름없음",
             body = rawMessage.body,
         )
 
