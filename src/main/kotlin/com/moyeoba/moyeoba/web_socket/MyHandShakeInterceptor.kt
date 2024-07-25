@@ -61,9 +61,10 @@ class MyHandShakeInterceptor: HandshakeInterceptor {
             println("--------------------------------------------------------------")
         }
 
-        //TODO: 테스트 끝나면 활성화
+
         if(accessToken.isEmpty()) {
             logger.info { "HandShake Interceptor) Token Not Found" }
+            //TODO: 테스트 끝나면 활성화
             //return false
         } else if(!tokenManager.validateToken(accessToken)) {
             logger.info { "HandShake Interceptor) Invalid Token" }

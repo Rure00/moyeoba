@@ -1,5 +1,7 @@
 package com.moyeoba.moyeoba.security
 
+import com.moyeoba.moyeoba.jwt.TokenManager
+import com.moyeoba.moyeoba.service.UserService
 import com.moyeoba.moyeoba.web_socket.session.SessionUser
 import com.moyeoba.moyeoba.web_socket.session.SessionUserEncryption
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,7 +15,9 @@ import kotlin.random.Random
 class CustomInterceptor: DefaultHandshakeHandler() {
 
     @Autowired
-    private lateinit var sessionUserEncryption: SessionUserEncryption
+    private lateinit var userService: UserService
+    @Autowired
+    private lateinit var tokenManager: TokenManager
 
     override fun determineUser(
         request: ServerHttpRequest,
@@ -33,11 +37,12 @@ class CustomInterceptor: DefaultHandshakeHandler() {
 
         println("sessionId: $sessionId, random: $random")
 
-        //TODO: 테스트 종료 후 복구
-        //val user = userService.findUser(tokenManager.getUserIdFromToken(accessToken).toLong())!!
-        //return SessionUser(userId = user.id!!, userName = user.nickname, userEmail = user.email!!)
-
-        //TODO: 테스트 종료 후 삭제
-        return SessionUser(1L, "nickname", "email")
+        if(accessToken.isNotEmpty()) {
+            val user = userService.findUser(tokenManager.getUserIdFromToken(accessToken).toLong())!!
+            return SessionUser(userId = user.id!!, userName = user.nickname, userEmail = user.email!!)
+        } else {
+            //TODO: 테스트 종료 후 삭제
+            return SessionUser(0L, "Tester", "email@naver.com")
+        }
     }
 }
